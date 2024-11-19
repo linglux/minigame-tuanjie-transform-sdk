@@ -380,7 +380,7 @@ namespace WeChatWASM
                 return $"Packages{DS}com.qq.weixin.minigame{DS}Runtime{DS}Plugins{DS}LuaAdaptor{DS}{filename}";
             }
             
-            return $"Assets{DS}WX-WASM-SDK-V2{DS}Runtime{DS}Plugins{DS}{filename}";
+            return $"Assets{DS}WX-WASM-SDK-V2{DS}Runtime{DS}Plugins{DS}LuaAdaptor{DS}{filename}";
         }
 
         private static void MakeLuaImport(Dictionary<string, string> luaPaths)
@@ -424,9 +424,15 @@ namespace WeChatWASM
                 if (!File.Exists(path) && shouldBuild)
                 {
                     Debug.LogError("Lua Adaptor File Not Found: " + maybeBuildFile);
+                    continue;
                 }
 
                 var wxPerfJSBridgeImporter = AssetImporter.GetAtPath(path) as PluginImporter;
+                if (wxPerfJSBridgeImporter == null)
+                {
+                    Debug.LogError("Lua Adaptor Importer Not Found: " + maybeBuildFile);
+                    continue;
+                }
 #if PLATFORM_WEIXINMINIGAME
                 wxPerfJSBridgeImporter.SetCompatibleWithPlatform(BuildTarget.WeixinMiniGame, shouldBuild);
 #else
