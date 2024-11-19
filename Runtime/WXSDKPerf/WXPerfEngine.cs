@@ -45,6 +45,20 @@ namespace WXSDKPerf
             m_PerfEngineImplementation.Annotation(InAnnotationString);
 #endif
         }
+        
+        public static void SetLuaState(IntPtr L)
+        {
+#if UNITY_EDITOR
+            return; 
+#endif
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("SetLuaState: WXPerfEngine Not Started yet! Please Call WXSDKPerf.StartWXPerfEngine first! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.SetLuaState(L);
+        }
     }
 
 }
