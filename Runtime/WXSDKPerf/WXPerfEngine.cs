@@ -34,7 +34,14 @@ namespace WXSDKPerf
 #endif
 		}
 
-
+        /// <summary>
+        /// This method is used to add an annotation to the performance data.
+        /// The annotation string is uploaded to the server along with the current frame ID.
+        /// </summary>
+        /// <param name="InAnnotationString">The annotation string to be added. It should not be null or empty.</param>
+        /// <remarks>
+        /// If the provided annotation string is null or empty, an error message will be logged.
+        /// </remarks>
         public static void Annotation(string InAnnotationString)
         {
 #if UNITY_EDITOR
@@ -53,7 +60,6 @@ namespace WXSDKPerf
 
             m_PerfEngineImplementation.Annotation(InAnnotationString);
 #endif
-
         }
 
         private static void TakeAndUploadUnityMemorySnapshot()
@@ -75,7 +81,11 @@ namespace WXSDKPerf
 #endif
 #endif
         }
-        
+
+		/// <summary>
+        /// 指定luaState
+        /// </summary>
+        /// <param name="L">luaState</param>
         public static void SetLuaState(IntPtr L)
         {
 #if UNITY_EDITOR
@@ -90,8 +100,71 @@ namespace WXSDKPerf
             m_PerfEngineImplementation.SetLuaState(L);
 #endif
         }
-    }
+    
+		/// <summary>
+		/// 声明自定义性能指标
+		/// </summary>
+		/// <param name="inStatName">性能指标名称</param>
+		/// <param name="inStatCategory">性能指标类别</param>
+		/// <param name="inStatInterpType">性能指标展示方式，0. 不插值. 1. 线性插值；2. Step插值；</param>
+		public static void DeclareCustomStatInfo(string inStatName, string inStatCategory, int inStatInterpType = 1)
+		{
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("DeclareCustomStatInfo: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
 
+            m_PerfEngineImplementation.DeclareCustomStatInfo(inStatName, inStatCategory, inStatInterpType);
+#endif
+		}
+
+        /// <summary>
+		/// 设置自定义性能指标，目前只支持浮点数
+        /// 若该指标未通过DeclareCustomStatInfo进行类别的声明，则将被归为默认自定义类别，以及使用默认线性插值
+		/// </summary>
+		/// <param name="inStatName">性能指标名称</param>
+		/// <param name="inValue">性能指标数值</param>
+		public static void SetCustomStatValue(string inStatName, float inValue)
+		{
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("SetCustomStatInfo: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.SetCustomStatInfo(inStatName, inValue);
+#endif
+		}
+
+        /// 在自定义性能指标值的基础上增加一段数值。
+        /// 如果未进行指标声明，将自动声明该指标，该指标将出现在报告的“Project Default Stat Category”中
+        /// </summary>
+        /// <param name="inStatName">性能指标名称</param>
+        /// <param name="inValue">性能指标数值</param>
+		public static void AddCustomStatInfoBy(string inStatName, float inValue)
+		{
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("AddCustomStatInfoBy: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.AddCustomStatInfoBy(inStatName, inValue); 
+#endif
+			
+		}
+
+    }
 }
 #endif
 
