@@ -94,5 +94,13 @@ mergeInto(LibraryManager.library, {
             'idbfsPathStr': idbfsPathStr, 
             'targetPathStr': targetPathStr
         })
+    }, 
+
+    JSGetConvertPluginVersion: function() {
+        var lengthBytes = lengthBytesUTF8(GameGlobal.unityNamespace.convertPluginVersion) + 1;
+        var stringOnWasmHeap = _malloc(lengthBytes);
+        stringToUTF8(GameGlobal.unityNamespace.convertPluginVersion, stringOnWasmHeap, lengthBytes);
+        
+        return stringOnWasmHeap;
     }
 });

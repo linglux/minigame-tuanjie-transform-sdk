@@ -809,10 +809,11 @@ namespace WeChatWASM
             PlayerSettings.WebGL.emscriptenArgs = string.Empty;
             if (WXExtEnvDef.GETDEF("UNITY_2021_2_OR_NEWER"))
             {
-                PlayerSettings.WebGL.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end -s ERROR_ON_UNDEFINED_SYMBOLS=0";
+                PlayerSettings.WebGL.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end";
 #if UNITY_2021_2_5
-                    PlayerSettings.WebGL.emscriptenArgs += ",_main";
+                PlayerSettings.WebGL.emscriptenArgs += ",_main";
 #endif
+                PlayerSettings.WebGL.emscriptenArgs += " -s ERROR_ON_UNDEFINED_SYMBOLS=0";
             }
 #endif
             PlayerSettings.runInBackground = false;
