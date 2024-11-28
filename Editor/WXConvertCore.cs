@@ -319,7 +319,7 @@ namespace WeChatWASM
 
             {
                 // wx_perf_2021.a
-                bool bShouldEnablePerf2021Plugin = config.CompileOptions.enablePerfAnalysis && IsCompatibleWithUnity202103To202203();
+                bool bShouldEnablePerf2021Plugin = config.CompileOptions.enablePerfAnalysis && IsCompatibleWithUnity202102To202203();
 
                 var wxPerf2021Importer = AssetImporter.GetAtPath(wxPerfPlugins[2]) as PluginImporter;
 #if PLATFORM_WEIXINMINIGAME
@@ -462,11 +462,11 @@ namespace WeChatWASM
 #endif
         }
 
-        static bool IsCompatibleWithUnity202103To202203()
+        static bool IsCompatibleWithUnity202102To202203()
         {
 #if UNITY_2022_3_OR_NEWER
             return false;
-#elif !UNITY_2021_3_OR_NEWER
+#elif !UNITY_2021_2_OR_NEWER
             return false;
 #else
             return true;
