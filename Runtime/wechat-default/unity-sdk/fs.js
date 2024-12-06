@@ -409,7 +409,9 @@ export default {
     WX_FileSystemManagerReadSync(option, callbackId) {
         const fs = wx.getFileSystemManager();
         console.error('WX_FileSystemManagerReadSync', option);
-        const res = fs.readSync(formatJsonStr(option));
+        const optionConfig = formatJsonStr(option);
+        optionConfig.arrayBuffer = new ArrayBuffer(optionConfig.arrayBuffer.byteLength);
+        const res = fs.readSync(optionConfig);
         console.error('WX_FileSystemManagerReadSync res', res);
         cacheArrayBuffer(callbackId, res.arrayBuffer);
         console.log('111');
