@@ -440,15 +440,11 @@ export default {
         const optionConfig = formatJsonStr(option);
         optionConfig.data = data.buffer;
         const res = fs.writeSync(optionConfig);
-        return JSON.stringify({
-            mode: res.bytesWritten,
-        });
+        return JSON.stringify(res);
     },
     WX_FileSystemManagerWriteStringSync(option) {
         const fs = wx.getFileSystemManager();
-        console.warn('WX_FileSystemManagerWriteStringSync', option);
         const res = fs.writeSync(formatJsonStr(option));
-        console.warn('WX_FileSystemManagerWriteStringSync res', res);
         return JSON.stringify(res);
     },
     WX_FileSystemManagerOpenSync(option) {

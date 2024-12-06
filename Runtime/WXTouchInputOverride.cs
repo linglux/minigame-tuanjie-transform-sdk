@@ -149,19 +149,19 @@ public class WXTouchInputOverride : BaseInput
             Text text = selectedObject.GetComponent<Text>();
             if (text != null) 
             {
-            #if PLATFORM_WEIXINMINIGAME
+#if PLATFORM_WEIXINMINIGAME
                 WeixinMiniGameInput.mobileKeyboardSupport = true;
-            #elif PLATFORM_WEBGL
+#elif PLATFORM_WEBGL
                 WebGLInput.mobileKeyboardSupport = true;
-            #endif
+#endif
             }
             else 
             {
-            #if PLATFORM_WEIXINMINIGAME
+#if PLATFORM_WEIXINMINIGAME
                 WeixinMiniGameInput.mobileKeyboardSupport = false;
-            #elif PLATFORM_WEBGL
+#elif PLATFORM_WEBGL
                 WebGLInput.mobileKeyboardSupport = false;
-            #endif
+#endif
             }
 #endif
         }
