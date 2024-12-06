@@ -408,8 +408,11 @@ export default {
     },
     WX_FileSystemManagerReadSync(option, callbackId) {
         const fs = wx.getFileSystemManager();
+        console.error('WX_FileSystemManagerReadSync', option);
         const res = fs.readSync(formatJsonStr(option));
+        console.error('WX_FileSystemManagerReadSync res', res);
         cacheArrayBuffer(callbackId, res.arrayBuffer);
+        console.log('111');
         return JSON.stringify({
             bytesRead: res.bytesRead,
             arrayBufferLength: res.arrayBuffer?.byteLength ?? 0,
