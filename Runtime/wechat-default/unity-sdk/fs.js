@@ -444,7 +444,9 @@ export default {
     },
     WX_FileSystemManagerWriteStringSync(option) {
         const fs = wx.getFileSystemManager();
+        console.warn('WX_FileSystemManagerWriteStringSync', option);
         const res = fs.writeSync(formatJsonStr(option));
+        console.warn('WX_FileSystemManagerWriteStringSync res', res);
         return JSON.stringify({
             mode: res.bytesWritten,
         });
