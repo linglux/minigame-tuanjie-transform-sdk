@@ -62,6 +62,20 @@ namespace WXSDKPerf
 #endif
         }
 
+        
+        /// <summary>
+        /// 检查是否正在录制性能数据
+        /// </summary>
+        /// <returns>如果正在录制返回true，否则返回false</returns>
+        public static bool IsRecording()
+        {
+#if UNITY_EDITOR
+            return false;
+#else
+            return m_PerfEngineImplementation != null && m_PerfEngineImplementation.IsRecording();
+#endif
+        }
+
         private static void TakeAndUploadUnityMemorySnapshot()
         {
 #if UNITY_EDITOR
