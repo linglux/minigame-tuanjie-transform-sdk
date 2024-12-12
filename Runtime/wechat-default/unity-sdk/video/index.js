@@ -2,10 +2,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { isH5Renderer, isSupportVideoPlayer, isPc, isDevtools } from '../../check-version';
 let FrameworkData = null;
-const isWebVideo = isH5Renderer || isPc || isDevtools;
+
+const isWebVideo = (isH5Renderer && !GameGlobal.isIOSHighPerformanceModePlus) || isPc || isDevtools;
 const isDebug = false;
 const needCache = true;
 const cacheVideoDecoder = [];
+const supportVideoFrame = !!GameGlobal.isIOSHighPerformanceModePlus;
 const videoInstances = {};
 function _JS_Video_CanPlayFormat(format, data) {
     
@@ -72,6 +74,8 @@ function _JS_Video_Create(url) {
         };
         // eslint-disable-next-line no-plusplus
         videoInstances[++videoInstanceIdCounter] = videoInstance;
+        
+        videoDecoder.remove();
         videoDecoder.on('start', (res) => {
             if (isDebug) {
                 console.warn('wxVideoDecoder start:', res);
@@ -115,14 +119,22 @@ function _JS_Video_Create(url) {
         });
         // @ts-ignore
         videoDecoder.on('frame', (res) => {
-            
             // @ts-ignore
             videoInstance.currentTime = res.pts / 1000;
-            videoInstance.frameData = new Uint8ClampedArray(res.data);
+            
+            if (supportVideoFrame) {
+                
+                videoInstance.frameData?.close?.();
+            }
+            videoInstance.frameData = res;
         });
-        videoInstance.play = () => videoDecoder.start({
+        const startOption = {
             source,
-        });
+        };
+        if (supportVideoFrame) {
+            startOption.videoDataType = 2;
+        }
+        videoInstance.play = () => videoDecoder.start(startOption);
         videoInstance.pause = () => {
             videoDecoder.stop();
         };
@@ -395,7 +407,16 @@ function _JS_Video_UpdateToTexture(video, tex) {
             v.render();
         }
         else {
-            GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, v.videoWidth, v.videoHeight, 0, format, GLctx.UNSIGNED_BYTE, v.frameData);
+            
+            const data = v.frameData?.data;
+            const source = supportVideoFrame ? data : new Uint8ClampedArray(data);
+            
+            if (supportVideoFrame) {
+                GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, format, GLctx.UNSIGNED_BYTE, source);
+            }
+            else {
+                GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, v.videoWidth, v.videoHeight, 0, format, GLctx.UNSIGNED_BYTE, source);
+            }
         }
         v.previousUploadedWidth = width;
         v.previousUploadedHeight = height;
@@ -406,7 +427,15 @@ function _JS_Video_UpdateToTexture(video, tex) {
             v.render();
         }
         else {
-            GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, v.videoWidth, v.videoHeight, 0, format, GLctx.UNSIGNED_BYTE, v.frameData);
+            const data = v.frameData?.data;
+            const source = supportVideoFrame ? data : new Uint8ClampedArray(data);
+            
+            if (supportVideoFrame) {
+                GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, format, GLctx.UNSIGNED_BYTE, source);
+            }
+            else {
+                GLctx.texImage2D(GLctx.TEXTURE_2D, 0, internalFormat, v.videoWidth, v.videoHeight, 0, format, GLctx.UNSIGNED_BYTE, source);
+            }
         }
     }
     GLctx.pixelStorei(GLctx.UNPACK_FLIP_Y_WEBGL, false);
