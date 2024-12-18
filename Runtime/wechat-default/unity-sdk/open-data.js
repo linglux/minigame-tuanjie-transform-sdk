@@ -107,9 +107,9 @@ export default {
         getOpenDataContext(mode);
     },
     WXDataContextPostMessage(msg) {
-        if (isDebug) {
-            console.warn('WXDataContextPostMessage:', msg);
-        }
+        
+        console.warn('WXDataContextPostMessage:', msg);
+        
         getOpenDataContext().postMessage(msg);
     },
     WXShowOpenData(id, x, y, width, height) {
