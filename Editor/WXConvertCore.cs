@@ -243,7 +243,7 @@ namespace WeChatWASM
             try
             {
                 string metaPath = AssetDatabase.GetTextMetaFilePathFromAssetPath(inAssetPath); // 获取.meta文件的路径
-                string enableFlagStr = inEnabled ? "1" : "0";
+                string enableFlagStr = inEnabled? "1" : "0";
 
                 // 读取.meta文件
                 // 处理WebGL
@@ -314,7 +314,7 @@ namespace WeChatWASM
 #else
                 wxPerf2022Importer.SetCompatibleWithPlatform(BuildTarget.WebGL, bShouldEnablePerf2022Plugin);
 #endif
-                SetPluginCompatibilityByModifyingMetadataFile(wxPerfPlugins[1], bShouldEnablePerf2022Plugin);
+                SetPluginCompatibilityByModifyingMetadataFile(wxPerfPlugins[1], bShouldEnablePerf2022Plugin); 
             }
 
             {
@@ -335,7 +335,7 @@ namespace WeChatWASM
         /**
          * Lua Adaptor Settings.
          */
-
+        
         private static bool GetRequiredLuaHeaderFiles(out Dictionary<string, string> luaPaths)
         {
             luaPaths = new Dictionary<string, string>()
@@ -349,8 +349,8 @@ namespace WeChatWASM
                 {"ltable.h", null},
                 {"lauxlib.h", null},
             };
-
-            string rootPath = Directory.GetParent(Application.dataPath).ToString();
+            
+            string  rootPath  = Directory.GetParent(Application.dataPath).ToString();
             string[] paths = Directory.GetFiles(rootPath, "*.h", SearchOption.AllDirectories);
             foreach (var path in paths)
             {
@@ -379,7 +379,7 @@ namespace WeChatWASM
             {
                 return $"Packages{DS}com.qq.weixin.minigame{DS}Runtime{DS}Plugins{DS}LuaAdaptor{DS}{filename}";
             }
-
+            
             return $"Assets{DS}WX-WASM-SDK-V2{DS}Runtime{DS}Plugins{DS}LuaAdaptor{DS}{filename}";
         }
 
@@ -408,9 +408,8 @@ namespace WeChatWASM
 
             File.WriteAllText(luaAdaptorImportHeaderPath, importHeaderContent);
         }
-
-        private static void ManageLuaAdaptorBuildOptions(bool shouldBuild)
-        {
+        
+        private static void ManageLuaAdaptorBuildOptions(bool shouldBuild) {
             string[] maybeBuildFiles = new string[]
             {
                 "lua_adaptor_501.c",
@@ -442,7 +441,7 @@ namespace WeChatWASM
                 SetPluginCompatibilityByModifyingMetadataFile(path, shouldBuild);
             }
         }
-
+        
         private static void MakeEnvForLuaAdaptor()
         {
             bool hasLuaEnv = GetRequiredLuaHeaderFiles(out var luaPaths);
@@ -450,10 +449,10 @@ namespace WeChatWASM
             {
                 MakeLuaImport(luaPaths);
             }
-
+            
             ManageLuaAdaptorBuildOptions(hasLuaEnv && config.CompileOptions.enablePerfAnalysis);
         }
-
+        
         private static bool IsCompatibleWithUnity202203OrNewer()
         {
 #if UNITY_2022_3_OR_NEWER
