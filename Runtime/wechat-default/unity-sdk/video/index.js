@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isH5Renderer, isSupportVideoPlayer, isPc, isDevtools } from '../../check-version';
+import { isH5Renderer, isSupportVideoPlayer, isDebug, isPc, isDevtools } from '../../check-version';
 let FrameworkData = null;
 
 const isWebVideo = (isH5Renderer && !GameGlobal.isIOSHighPerformanceModePlus) || isPc || isDevtools;
-const isDebug = false;
 const needCache = true;
 const cacheVideoDecoder = [];
 const supportVideoFrame = !!GameGlobal.isIOSHighPerformanceModePlus;
