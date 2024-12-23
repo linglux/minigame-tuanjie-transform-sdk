@@ -178,6 +178,51 @@ namespace WXSDKPerf
 			
 		}
 
+
+        /// <summary>
+        /// 手动开始记录
+        /// </summary>
+        /// <param name="inEnableStackTrace">是否启用堆栈跟踪</param>
+        /// <param name="inEnableStatInfo">是否启用统计信息</param>
+        /// <param name="inFrequentScreenShot">是否频繁截图</param>
+        /// <param name="inEnablebRenderInst">是否记录渲染指令</param>
+        /// <param name="inEnableCaptureResource">是否启用资源捕获</param>
+        /// <param name="inEnableLuaMemoryMonitor">是否启用Lua内存监控</param>
+        /// <param name="inEnableLuaFunctionMemoryTracking">是否启用Lua函数内存跟踪</param>
+        public static void StartRecordManually(bool inEnableStackTrace, bool inEnableStatInfo, bool inFrequentScreenShot, bool inEnablebRenderInst, 
+            bool inEnableCaptureResource, bool inEnableLuaMemoryMonitor, bool inEnableLuaFunctionMemoryTracking)
+        {
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("StartRecordManually: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.StartRecordManually(inEnableStackTrace, inEnableStatInfo, inFrequentScreenShot, inEnablebRenderInst, 
+                inEnableCaptureResource, inEnableLuaMemoryMonitor, inEnableLuaFunctionMemoryTracking);
+#endif
+        }
+
+        /// <summary>
+        /// 手动停止记录
+        /// </summary>
+        public static void StopRecordManually()
+		{
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("StartRecordManually: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.StopRecordManually();
+#endif
+		}
     }
 }
 #endif
