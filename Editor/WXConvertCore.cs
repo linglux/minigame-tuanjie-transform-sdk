@@ -1250,12 +1250,13 @@ namespace WeChatWASM
 
         private static void InsertPreviewCode()
         {
+            Debug.LogWarning("[WeChat Preview] InsertPreviewCode Start");
             Rule[] rules =
             {
                 // game.json
                 new Rule()
                 {
-                    old = "\"plugins\" *: *{",
+                    old = "\"plugins\"                    : {",
                     newStr = "\"plugins\"                    : {\n" +
                     "    \"MiniGamePreviewPlugin\": {\n" +
                     "      \"version\": \"1.0.2\",\n" + // 这里更改版本号
@@ -1270,7 +1271,7 @@ namespace WeChatWASM
                 // game.js
                 new Rule()
                 {
-                    old = "const *managerConfig *= *{",
+                    old = "const managerConfig = {",
                     newStr = 
                     "export let minigamePreview;\n" +
                     "let opt = wx.getLaunchOptionsSync();\n" +
@@ -1310,14 +1311,14 @@ namespace WeChatWASM
                 // unity-sdk/module-helper.js
                 new Rule()
                 {
-                    old = "import *{ *MODULE_NAME *} *from *'./conf';",
+                    old = "import { MODULE_NAME } from './conf';",
                     newStr = "import { MODULE_NAME } from './conf';\n" +
                     "import { minigamePreview } from '../game';",
                 },
                 // unity-sdk/module-helper.js
                 new Rule()
                 {
-                    old = "this._send *= *GameGlobal.Module.SendMessage;",
+                    old = "this._send = GameGlobal.Module.SendMessage;",
                     newStr = "if (minigamePreview) {\n" +
                     "        this._send = minigamePreview.getPreviewSend();\n" +
                     "      } else {\n" +
@@ -1327,6 +1328,7 @@ namespace WeChatWASM
             };
             string[] files = { "game.js", "game.json", "unity-sdk/module-helper.js" };
             ReplaceFileContent(files, rules);
+            Debug.LogWarning("[WeChat Preview] InsertPreviewCode End");
         }
 
         private static int Brotlib(string filename, string sourcePath, string targetPath)
