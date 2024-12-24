@@ -1091,8 +1091,6 @@ namespace WeChatWASM
                     File.Copy(tempDataPath, config.ProjectConf.compressDataPackage ? brMinigameDataPath : originMinigameDataPath, true);
                 }
             }
-            checkNeedRmovePackageParallelPreload();
-
             // 设置InstantGame的首资源包路径，上传用
             FirstBundlePath = tempDataPath;
 
@@ -1101,6 +1099,8 @@ namespace WeChatWASM
 
         public static void convertDataPackageJS()
         {
+            checkNeedRmovePackageParallelPreload();
+
             var loadDataFromCdn = config.ProjectConf.assetLoadType == 0;
             Rule[] rules =
             {
@@ -1133,10 +1133,19 @@ namespace WeChatWASM
 
         private static void checkNeedRmovePackageParallelPreload()
         {
+            string dst;
+            if (WXRuntimeExtEnvDef.IsPreviewing)
+            {
+                dst = WXRuntimeExtEnvDef.PreviewDst;
+            }
+            else
+            {
+                dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
+            }
             // cdn下载时不需要填写并行下载配置
             if (config.ProjectConf.assetLoadType == 0)
             {
-                var filePath = Path.Combine(config.ProjectConf.DST, miniGameDir, "game.json");
+                var filePath = Path.Combine(dst, "game.json");
 
                 string content = File.ReadAllText(filePath, Encoding.UTF8);
                 JsonData gameJson = JsonMapper.ToObject(content);
