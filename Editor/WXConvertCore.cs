@@ -1162,7 +1162,7 @@ namespace WeChatWASM
             {
                 for (int i = 0; i < files.Length; i++)
                 {
-                    var filePath = Path.Combine(config.ProjectConf.DST, fileDir ? fileDir : miniGameDir, files[i]);
+                    var filePath = Path.Combine(config.ProjectConf.DST, fileDir != null ? fileDir : miniGameDir, files[i]);
                     string text = File.ReadAllText(filePath, Encoding.UTF8);
                     for (int j = 0; j < replaceList.Length; j++)
                     {
