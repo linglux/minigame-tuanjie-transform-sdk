@@ -1121,9 +1121,9 @@ namespace WeChatWASM
                 }
             };
             string[] files = { "game.js", "game.json", "project.config.json", "check-version.js" };
-            if (WXRuntimeEnvDef.IsPreviewing)
+            if (WXRuntimeExtEnvDef.IsPreviewing)
             {
-                ReplaceFileContent(files, rules, WXRuntimeEnvDef.PreviewDst);
+                ReplaceFileContent(files, rules, WXRuntimeExtEnvDef.PreviewDst);
             }
             else 
             {
@@ -1704,9 +1704,9 @@ namespace WeChatWASM
             List<Rule> replaceList = new List<Rule>(replaceArrayList);
             List<string> files = new List<string> { "game.js", "game.json", "project.config.json", "unity-namespace.js", "check-version.js", "unity-sdk/font/index.js" };
 
-            if (WXRuntimeEnvDef.IsPreviewing)
+            if (WXRuntimeExtEnvDef.IsPreviewing)
             {
-                ReplaceFileContent(files.ToArray(), replaceList.ToArray(), WXRuntimeEnvDef.PreviewDst);
+                ReplaceFileContent(files.ToArray(), replaceList.ToArray(), WXRuntimeExtEnvDef.PreviewDst);
             }
             else
             {
