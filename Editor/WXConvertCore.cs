@@ -1160,9 +1160,10 @@ namespace WeChatWASM
         {
             if (files.Length != 0 && replaceList.Length != 0)
             {
+                var dstPath = fileDir != null ? fileDir : Path.Combine(config.ProjectConf.DST, miniGameDir);
                 for (int i = 0; i < files.Length; i++)
                 {
-                    var filePath = Path.Combine(config.ProjectConf.DST, fileDir != null ? fileDir : miniGameDir, files[i]);
+                    var filePath = Path.Combine(dstPath, files[i]);
                     string text = File.ReadAllText(filePath, Encoding.UTF8);
                     for (int j = 0; j < replaceList.Length; j++)
                     {
@@ -1223,6 +1224,10 @@ namespace WeChatWASM
             var info = new FileInfo(dataPath);
             dataFileSize = info.Length.ToString();
             UnityEngine.Debug.LogFormat("[Converter] that to genarate md5 and copy files ended");
+            if (config.ProjectConf.Appid == "wx7c792ca878775717") // 快适配小游戏示例
+            {
+                InsertPreviewCode();
+            }
             ModifyWeChatConfigs(isFromConvert);
             ModifySDKFile();
             ClearFriendRelationCode();
@@ -1234,6 +1239,87 @@ namespace WeChatWASM
                 Directory.CreateDirectory(Path.Combine(config.ProjectConf.DST, webglDir, "StreamingAssets"));
             }
             return Brotlib(codeMd5 + ".webgl.wasm.code.unityweb.wasm.br", codePath, Path.Combine(config.ProjectConf.DST, miniGameDir, "wasmcode", codeMd5 + ".webgl.wasm.code.unityweb.wasm.br"));
+        }
+
+        private void InsertPreviewCode()
+        {
+            Rule[] rules =
+            {
+                // game.json
+                new Rule()
+                {
+                    old = "\"plugins\" *: *{",
+                    newStr = "\"plugins\"                    : {\n" +
+                    "    \"MiniGamePreviewPlugin\": {\n" +
+                    "      \"version\": \"1.0.2\",\n" + // 这里更改版本号
+                    "      \"provider\": \"wx7c792ca878775717\",\n" +
+                    "      \"contexts\": [\n" +
+                    "        {\n" +
+                    "          \"type\": \"isolatedContext\"\n" +
+                    "        }\n" +
+                    "      ]\n" +
+                    "    },"
+                },
+                // game.js
+                new Rule()
+                {
+                    old = "const *managerConfig *= *{",
+                    newStr = 
+                    "export let minigamePreview;\n" +
+                    "let opt = wx.getLaunchOptionsSync();\n" +
+                    "console.warn(opt);\n" +
+                    "// opt.query.url = 'localhost:8888';\n" +
+                    "if (opt.query.url) {\n" +
+                    "  const [ip, port] = opt.query.url.split(':');\n" +
+                    "  let MiniGamePreview;\n" +
+                    "  if (requirePlugin) {\n" +
+                    "    try {\n" +
+                    "      MiniGamePreview = requirePlugin('MiniGamePreviewPlugin', {\n" +
+                    "        enableRequireHostModule: true,\n" +
+                    "        customEnv: {\n" +
+                    "          wx,\n" +
+                    "          canvas,\n" +
+                    "          gameGlobal: {...GameGlobal},\n" +
+                    "        },\n" +
+                    "      }).default;\n" +
+                    "    } catch (e) {\n" +
+                    "      console.error(e);\n" +
+                    "    }\n" +
+                    "    minigamePreview = new MiniGamePreview({\n" +
+                    "      ip: ip,\n" +
+                    "      port: port\n" +
+                    "    })\n" +
+                    "    minigamePreview.initStartPage();\n" +
+                    "  }\n" +
+                    "} else {\n" +
+                    "const managerConfig = {",
+                },
+                // game.js
+                new Rule()
+                {
+                    old = "    }\n});",
+                    newStr = "    }\n});}",
+                }
+                // unity-sdk/module-helper.js
+                new Rule()
+                {
+                    old = "import *{ *MODULE_NAME *} *from *'./conf';",
+                    newStr = "import { MODULE_NAME } from './conf';\n" +
+                    "import { minigamePreview } from '../game';",
+                },
+                // unity-sdk/module-helper.js
+                new Rule()
+                {
+                    old = "this._send *= *GameGlobal.Module.SendMessage;",
+                    newStr = "if (minigamePreview) {\n" +
+                    "        this._send = minigamePreview.getPreviewSend();\n" +
+                    "      } else {\n" +
+                    "        this._send = GameGlobal.Module.SendMessage;\n" +
+                    "      }",
+                }
+            };
+            string[] files = { "game.js", "game.json", "unity-sdk/module-helper.js" };
+            ReplaceFileContent(files, rules);
         }
 
         private static int Brotlib(string filename, string sourcePath, string targetPath)
@@ -1310,9 +1396,18 @@ namespace WeChatWASM
         /// <summary>
         /// 更新game.json
         /// </summary>
-        private static void ClearFriendRelationCode()
+        public static void ClearFriendRelationCode()
         {
-            var filePath = Path.Combine(config.ProjectConf.DST, miniGameDir, "game.json");
+            string dst;
+            if (WXRuntimeExtEnvDef.IsPreviewing)
+            {
+                dst = WXRuntimeExtEnvDef.PreviewDst;
+            }
+            else
+            {
+                dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
+            }
+            var filePath = Path.Combine(dst, "game.json");
 
             string content = File.ReadAllText(filePath, Encoding.UTF8);
             JsonData gameJson = JsonMapper.ToObject(content);
@@ -1330,7 +1425,7 @@ namespace WeChatWASM
                     gameJson["plugins"].Remove("Layout");
 
                     // 删除 open-data 相应的文件夹
-                    string openDataDir = Path.Combine(config.ProjectConf.DST, miniGameDir, "open-data");
+                    string openDataDir = Path.Combine(dst, "open-data");
                     UnityUtil.DelectDir(openDataDir);
                     Directory.Delete(openDataDir, true);
                 }
@@ -1355,9 +1450,18 @@ namespace WeChatWASM
         /// <summary>
         /// 更新game.js
         /// </summary>
-        private static void GameJsPlugins()
+        public static void GameJsPlugins()
         {
-            var filePath = Path.Combine(config.ProjectConf.DST, miniGameDir, "game.js");
+            string dst;
+            if (WXRuntimeExtEnvDef.IsPreviewing)
+            {
+                dst = WXRuntimeExtEnvDef.PreviewDst;
+            }
+            else
+            {
+                dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
+            }
+            var filePath = Path.Combine(dst, "game.js");
 
             string content = File.ReadAllText(filePath, Encoding.UTF8);
 
@@ -1379,7 +1483,7 @@ namespace WeChatWASM
             }
             else
             {
-                File.Delete(Path.Combine(config.ProjectConf.DST, miniGameDir, "plugins", "check-update.js"));
+                File.Delete(Path.Combine(dst, "plugins", "check-update.js"));
             }
             if (config.CompileOptions.autoAdaptScreen)
             {
@@ -1388,7 +1492,7 @@ namespace WeChatWASM
             }
             else
             {
-                File.Delete(Path.Combine(config.ProjectConf.DST, miniGameDir, "plugins", "screen-adapter.js"));
+                File.Delete(Path.Combine(dst, "plugins", "screen-adapter.js"));
             }
 
             if (changed)
@@ -1397,26 +1501,35 @@ namespace WeChatWASM
             }
             else
             {
-                Directory.Delete(Path.Combine(config.ProjectConf.DST, miniGameDir, "plugins"), true);
+                Directory.Delete(Path.Combine(dst, "plugins"), true);
             }
         }
 
 
-        private static void ModifySDKFile()
+        public static void ModifySDKFile()
         {
+            string dst;
+            if (WXRuntimeExtEnvDef.IsPreviewing)
+            {
+                dst = WXRuntimeExtEnvDef.PreviewDst;
+            }
+            else
+            {
+                dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
+            }
             var config = UnityUtil.GetEditorConf();
             string content = File.ReadAllText(SDKFilePath, Encoding.UTF8);
             content = content.Replace("$unityVersion$", Application.unityVersion);
-            File.WriteAllText(Path.Combine(config.ProjectConf.DST, miniGameDir, "unity-sdk", "index.js"), content, Encoding.UTF8);
+            File.WriteAllText(Path.Combine(dst, "unity-sdk", "index.js"), content, Encoding.UTF8);
             // content = File.ReadAllText(Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Runtime", "wechat-default", "unity-sdk", "storage.js"), Encoding.UTF8);
             content = File.ReadAllText(Path.Combine(UnityUtil.GetWxSDKRootPath(), "Runtime", "wechat-default", "unity-sdk", "storage.js"), Encoding.UTF8);
             var PreLoadKeys = config.PlayerPrefsKeys.Count > 0 ? JsonMapper.ToJson(config.PlayerPrefsKeys) : "[]";
             content = content.Replace("'$PreLoadKeys'", PreLoadKeys);
-            File.WriteAllText(Path.Combine(config.ProjectConf.DST, miniGameDir, "unity-sdk", "storage.js"), content, Encoding.UTF8);
+            File.WriteAllText(Path.Combine(dst, "unity-sdk", "storage.js"), content, Encoding.UTF8);
             // 修改纹理dxt
             // content = File.ReadAllText(Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Runtime", "wechat-default", "unity-sdk", "texture.js"), Encoding.UTF8);
             content = File.ReadAllText(Path.Combine(UnityUtil.GetWxSDKRootPath(), "Runtime", "wechat-default", "unity-sdk", "texture.js"), Encoding.UTF8);
-            File.WriteAllText(Path.Combine(config.ProjectConf.DST, miniGameDir, "unity-sdk", "texture.js"), content, Encoding.UTF8);
+            File.WriteAllText(Path.Combine(dst, "unity-sdk", "texture.js"), content, Encoding.UTF8);
         }
 
         public static string HandleLoadingImage()
@@ -1707,6 +1820,10 @@ namespace WeChatWASM
             if (WXRuntimeExtEnvDef.IsPreviewing)
             {
                 ReplaceFileContent(files.ToArray(), replaceList.ToArray(), WXRuntimeExtEnvDef.PreviewDst);
+                BuildTemplate.mergeJSON(
+                    Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Editor", "template", "minigame"),
+                    WXRuntimeExtEnvDef.PreviewDst
+                );
             }
             else
             {
@@ -1715,8 +1832,8 @@ namespace WeChatWASM
                     Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Editor", "template", "minigame"),
                     Path.Combine(config.ProjectConf.DST, miniGameDir)
                 );
-                Emit(LifeCycle.afterBuildTemplate);
             }
+            Emit(LifeCycle.afterBuildTemplate);
 
             UnityEngine.Debug.LogFormat("[Converter] that to modify configs ended");
         }
