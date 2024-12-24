@@ -1299,7 +1299,7 @@ namespace WeChatWASM
                 {
                     old = "    }\n});",
                     newStr = "    }\n});}",
-                }
+                },
                 // unity-sdk/module-helper.js
                 new Rule()
                 {
