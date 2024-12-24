@@ -1517,7 +1517,6 @@ namespace WeChatWASM
             {
                 dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
             }
-            var config = UnityUtil.GetEditorConf();
             string content = File.ReadAllText(SDKFilePath, Encoding.UTF8);
             content = content.Replace("$unityVersion$", Application.unityVersion);
             File.WriteAllText(Path.Combine(dst, "unity-sdk", "index.js"), content, Encoding.UTF8);
