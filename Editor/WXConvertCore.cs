@@ -1241,7 +1241,7 @@ namespace WeChatWASM
             return Brotlib(codeMd5 + ".webgl.wasm.code.unityweb.wasm.br", codePath, Path.Combine(config.ProjectConf.DST, miniGameDir, "wasmcode", codeMd5 + ".webgl.wasm.code.unityweb.wasm.br"));
         }
 
-        private void InsertPreviewCode()
+        private static void InsertPreviewCode()
         {
             Rule[] rules =
             {
