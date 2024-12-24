@@ -25,7 +25,6 @@ namespace WeChatWASM
 
         public static void Init()
         {
-            SDKFilePath = Path.Combine(UnityUtil.GetWxSDKRootPath(), "Runtime", "wechat-default", "unity-sdk", "index.js");
             string templateHeader = "PROJECT:";
 #if TUANJIE_2022_3_OR_NEWER
             PlayerSettings.WeixinMiniGame.threadsSupport = false;
@@ -79,7 +78,6 @@ namespace WeChatWASM
         public static string dataFileSize = string.Empty;
         public static string codeMd5 = string.Empty;
         public static string dataMd5 = string.Empty;
-        private static string SDKFilePath = string.Empty;
         public static string defaultImgSrc = "Assets/WX-WASM-SDK-V2/Runtime/wechat-default/images/background.jpg";
 
         private static bool lastBrotliType = false;
@@ -1526,7 +1524,7 @@ namespace WeChatWASM
             {
                 dst = Path.Combine(config.ProjectConf.DST, miniGameDir);
             }
-            string content = File.ReadAllText(SDKFilePath, Encoding.UTF8);
+            string content = File.ReadAllText(Path.Combine(UnityUtil.GetWxSDKRootPath(), "Runtime", "wechat-default", "unity-sdk", "index.js"), Encoding.UTF8);
             content = content.Replace("$unityVersion$", Application.unityVersion);
             File.WriteAllText(Path.Combine(dst, "unity-sdk", "index.js"), content, Encoding.UTF8);
             // content = File.ReadAllText(Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Runtime", "wechat-default", "unity-sdk", "storage.js"), Encoding.UTF8);
