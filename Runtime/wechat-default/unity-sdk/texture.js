@@ -254,7 +254,7 @@ canvasContext.addCreatedListener(() => {
     if (GameGlobal.USED_TEXTURE_COMPRESSION) {
         mod.getSupportedExtensions();
         if (GameGlobal.TextureCompressedFormat === '' || GameGlobal.TextureCompressedFormat === 'pvr') {
-            const { platform } = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
+            const { platform } = wx.getDeviceInfo();
             if (platform === 'ios') {
                 wx.showModal({
                     title: '提示',
