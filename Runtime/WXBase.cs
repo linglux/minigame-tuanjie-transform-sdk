@@ -446,9 +446,9 @@ namespace WeChatWASM
         /// 获取开放数据域，关系链相关可以参看 https://developers.weixin.qq.com/minigame/dev/guide/open-ability/open-data.html
         /// </summary>
         /// <returns>开放数据域对象</returns>
-        public static WXOpenDataContext GetOpenDataContext(OpenDataContextOption option = null)
+        public static WXOpenDataContext GetOpenDataContext()
         {
-            return new WXOpenDataContext(option);
+            return new WXOpenDataContext();
         }
 
         /// <summary>
