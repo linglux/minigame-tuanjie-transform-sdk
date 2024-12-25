@@ -1274,11 +1274,25 @@ namespace WeChatWASM
                     old = "const managerConfig = {",
                     newStr = 
                     "export let minigamePreview;\n" +
-                    "let opt = wx.getLaunchOptionsSync();\n" +
-                    "console.warn(opt);\n" +
-                    "// opt.query.url = 'localhost:8888';\n" +
-                    "if (opt.query.url) {\n" +
-                    "  const [ip, port] = opt.query.url.split(':');\n" +
+                    "let isStarted = false;\n" +
+                    "wx.onShow((res) => {\n" +
+                    "  console.warn('onShow: ' + JSON.stringify(res));\n" +
+                    "  // res.query.url = 'localhost:8888';\n" +
+                    "  if (!isStarted) {\n" +
+                    "    isStarted = true;\n" +
+                    "    if (res.query.url) {\n" +
+                    "      startPreview(res.query.url);\n" +
+                    "    } else {\n" +
+                    "      startGame();\n" +
+                    "    }\n" +
+                    "  } else if (res.query.url) { // 扫预览码进入\n" +
+                    "    wx.restartMiniProgram({\n" +
+                    "      path: `/?url=${res.query.url}`\n" +
+                    "    });\n" +
+                    "  }\n" +
+                    "})\n" +
+                    "function startPreview(url) {\n" +
+                    "  const [ip, port] = url.split(':');\n" +
                     "  let MiniGamePreview;\n" +
                     "  if (requirePlugin) {\n" +
                     "    try {\n" +
@@ -1299,7 +1313,8 @@ namespace WeChatWASM
                     "    })\n" +
                     "    minigamePreview.initStartPage();\n" +
                     "  }\n" +
-                    "} else {\n" +
+                    "}\n" +
+                    "function startGame() {\n" +
                     "const managerConfig = {",
                 },
                 // game.js
