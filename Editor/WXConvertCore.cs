@@ -1259,7 +1259,7 @@ namespace WeChatWASM
                     old = "\"plugins\": {",
                     newStr = "\"plugins\": {\n" +
                     "    \"MiniGamePreviewPlugin\": {\n" +
-                    "      \"version\": \"1.0.1\",\n" + // 这里更改版本号
+                    "      \"version\": \"1.0.3\",\n" + // 这里更改版本号
                     "      \"provider\": \"wx7c792ca878775717\",\n" +
                     "      \"contexts\": [\n" +
                     "        {\n" +
