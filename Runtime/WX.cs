@@ -2640,16 +2640,6 @@ namespace WeChatWASM
         }
 
         /// <summary>
-        /// [wx.reserveChannelsLive(Object object)](https://developers.weixin.qq.com/minigame/dev/api/open-api/channels/wx.reserveChannelsLive.html)
-        /// 需要基础库： `2.19.0`
-        /// 预约视频号直播
-        /// </summary>
-        public static void ReserveChannelsLive(ReserveChannelsLiveOption option)
-        {
-            WXSDKManagerHandler.Instance.ReserveChannelsLive(option);
-        }
-
-        /// <summary>
         /// [wx.revokeBufferURL(string url)](https://developers.weixin.qq.com/minigame/dev/api/storage/wx.revokeBufferURL.html)
         /// 需要基础库： `2.14.0`
         /// 根据 URL 销毁存在内存中的数据
