@@ -1292,7 +1292,7 @@ namespace WeChatWASM
                     "  }\n" +
                     "})\n" +
                     "function startPreview(url) {\n" +
-                    "  wx.setEnableDebug({ enableDebug: true });\n"
+                    "  wx.setEnableDebug({ enableDebug: true });\n" +
                     "  const [ip, port] = url.split(':');\n" +
                     "  let MiniGamePreview;\n" +
                     "  if (requirePlugin) {\n" +
