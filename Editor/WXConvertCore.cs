@@ -1253,13 +1253,13 @@ namespace WeChatWASM
             Debug.LogWarning("[WeChat Preview] InsertPreviewCode Start");
             Rule[] rules =
             {
-                // game.json
+                // game.json 引入预览插件
                 new Rule()
                 {
                     old = "\"plugins\": {",
                     newStr = "\"plugins\": {\n" +
                     "    \"MiniGamePreviewPlugin\": {\n" +
-                    "      \"version\": \"1.0.3\",\n" + // 这里更改版本号
+                    "      \"version\": \"1.0.4\",\n" + // 这里更改版本号
                     "      \"provider\": \"wx7c792ca878775717\",\n" +
                     "      \"contexts\": [\n" +
                     "        {\n" +
@@ -1268,7 +1268,7 @@ namespace WeChatWASM
                     "      ]\n" +
                     "    },"
                 },
-                // game.js
+                // game.js 嵌入：有url启动参数进入预览盒子
                 new Rule()
                 {
                     old = "const managerConfig = {",
@@ -1292,6 +1292,7 @@ namespace WeChatWASM
                     "  }\n" +
                     "})\n" +
                     "function startPreview(url) {\n" +
+                    "  wx.setEnableDebug({ enableDebug: true });\n"
                     "  const [ip, port] = url.split(':');\n" +
                     "  let MiniGamePreview;\n" +
                     "  if (requirePlugin) {\n" +
@@ -1317,20 +1318,20 @@ namespace WeChatWASM
                     "function startGame() {\n" +
                     "const managerConfig = {",
                 },
-                // game.js
+                // game.js 括号补齐
                 new Rule()
                 {
                     old = "    }\n});",
                     newStr = "    }\n});}",
                 },
-                // unity-sdk/module-helper.js
+                // unity-sdk/module-helper.js 引入预览插件
                 new Rule()
                 {
                     old = "import { MODULE_NAME } from './conf';",
                     newStr = "import { MODULE_NAME } from './conf';\n" +
                     "import { minigamePreview } from '../game';",
                 },
-                // unity-sdk/module-helper.js
+                // unity-sdk/module-helper.js 预览环境下hookAPI
                 new Rule()
                 {
                     old = "this._send = GameGlobal.Module.SendMessage;",
@@ -1339,9 +1340,14 @@ namespace WeChatWASM
                     "      } else {\n" +
                     "        this._send = GameGlobal.Module.SendMessage;\n" +
                     "      }",
+                },
+                new Rule()
+                {
+                    old = "3.5.1", // project.config.json 转换插件 hardcode
+                    newStr = "latest",
                 }
             };
-            string[] files = { "game.js", "game.json", "unity-sdk/module-helper.js" };
+            string[] files = { "game.js", "game.json", "unity-sdk/module-helper.js", "project.config.json" };
             ReplaceFileContent(files, rules);
             Debug.LogWarning("[WeChat Preview] InsertPreviewCode End");
         }
