@@ -6,10 +6,11 @@ Removed - 删除功能/接口
 Fixed - 修复问题
 Others - 其他 
 -->
-## 2024-12-25 【预发布】
-PackageManager(git URL): https://github.com/wechat-miniprogram/minigame-tuanjie-transform-sdk.git#pre-v0.1.24
+## 2024-1-7 【重要更新】
 ### Feature
-* 普通: OffShareMessageToFriend支持
+* 重要：支持Unity6，预览版本不建议上线使用
+* 普通：OffShareMessageToFriend支持
+* 普通：性能深度分析工具版本更新
 ### Fixed
 * 普通: reserveChannelsLive补充回调参数
 * 普通: 低基础库版本报错修复
