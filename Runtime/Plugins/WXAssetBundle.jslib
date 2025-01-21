@@ -198,7 +198,7 @@ var WXAssetBundleLibrary = {
     }();
     
     WXFS.cache = new WXFileCache(ttl, capacity);
-    if(unityNamespace.isIOS && unityNamespace.isH5Renderer) {
+    if(!unityNamespace.isAndroid) {
       WXFS.cache.RegularCleaning(1);
     }
 

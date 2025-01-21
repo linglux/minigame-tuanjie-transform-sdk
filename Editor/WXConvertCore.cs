@@ -11,6 +11,7 @@ using LitJson;
 using UnityEditor.Build;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using static WeChatWASM.LifeCycleEvent;
 
 namespace WeChatWASM
@@ -802,7 +803,7 @@ namespace WeChatWASM
             if (WXExtEnvDef.GETDEF("UNITY_2021_2_OR_NEWER"))
             {
                 // PlayerSettings.WeixinMiniGame.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_main,_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end";
-                PlayerSettings.WeixinMiniGame.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_main,_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end -s ERROR_ON_UNDEFINED_SYMBOLS=0";
+                PlayerSettings.WeixinMiniGame.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end -s ERROR_ON_UNDEFINED_SYMBOLS=0";
             }
 
 #else
@@ -810,7 +811,7 @@ namespace WeChatWASM
             if (WXExtEnvDef.GETDEF("UNITY_2021_2_OR_NEWER"))
             {
                 PlayerSettings.WebGL.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end";
-#if UNITY_2021_2_5 || UNITY_6000_0_OR_NEWER
+#if UNITY_2021_2_5
                 PlayerSettings.WebGL.emscriptenArgs += ",_main";
 #endif
                 PlayerSettings.WebGL.emscriptenArgs += " -s ERROR_ON_UNDEFINED_SYMBOLS=0";
@@ -874,14 +875,6 @@ namespace WeChatWASM
             {
                 PlayerSettings.WebGL.emscriptenArgs += " --profiling-funcs ";
             }
-
-#if UNITY_6000_0_OR_NEWER
-            if (config.CompileOptions.enableWasm2023) {
-                PlayerSettings.WebGL.wasm2023 = true;
-            } else {
-                PlayerSettings.WebGL.wasm2023 = false;
-            }
-#endif   
 
 #if UNITY_2021_2_OR_NEWER
 #if UNITY_2022_1_OR_NEWER
@@ -1000,8 +993,37 @@ namespace WeChatWASM
             return boot["resources"][key].Keys.Select(file => Path.Combine(config.ProjectConf.DST, webglDir, "Code", "wwwroot", "_framework", file)).ToArray();
         }
 
+        [DllImport("newstatehooker.dll")]
+        private static extern int add_lua_newstate_hook(string filename);
+
+        private static void MaybeInstallLuaNewStateHook() 
+        {
+            // 没有开启 perf tools, 不引入 newstate hook.
+            if (!config.CompileOptions.enablePerfAnalysis)
+            {
+                return;
+            }
+
+            string codePath = GetWebGLCodePath();
+
+            try
+            {
+                var ret = add_lua_newstate_hook(codePath);
+                if (ret != 0)
+                {
+                    Debug.LogWarning($"cannot add lua new state hook: {ret}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"cannot add lua new state hook: {e}");
+            }
+        }
+
         private static void finishExport()
         {
+            MaybeInstallLuaNewStateHook();
+
             int code = GenerateBinFile();
             if (code == 0)
             {

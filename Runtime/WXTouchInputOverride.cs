@@ -38,7 +38,7 @@ public class WXTouchInputOverride : BaseInput
     {
         base.OnEnable();
 #if UNITY_WEBGL && !UNITY_EDITOR
-        if (string.IsNullOrEmpty(WeChatWASM.WX.GetSystemInfoSync().platform)) return;
+        if (string.IsNullOrEmpty(WeChatWASM.WX.GetDeviceInfo().platform)) return;
         InitWechatTouchEvents();
         if (_standaloneInputModule)
         {
