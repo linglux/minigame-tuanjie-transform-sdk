@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isH5Renderer, isSupportVideoPlayer, isDebug, isPc, isDevtools } from '../../check-version';
+import { isH5Renderer, isSupportVideoPlayer, isPc, isDevtools } from '../../check-version';
+import { debugLog } from '../utils';
 let FrameworkData = null;
 
 const isWebVideo = (isH5Renderer && !GameGlobal.isIOSHighPerformanceModePlus) || isPc || isDevtools;
@@ -26,9 +27,7 @@ function dynCall_vii(...args) {
     }
 }
 function jsVideoEnded() {
-    if (isDebug) {
-        console.log('jsVideoEnded');
-    }
+    debugLog('jsVideoEnded');
     // @ts-ignore
     if (this.onendedCallback) {
         // @ts-ignore
@@ -40,9 +39,7 @@ function _JS_Video_Create(url) {
     if (FrameworkData) {
         source = FrameworkData.UTF8ToString(url);
     }
-    if (isDebug) {
-        console.log('_JS_Video_Create', source);
-    }
+    debugLog('_JS_Video_Create', source);
     if (isWebVideo) {
         // @ts-ignore
         const video = GameGlobal.manager.createWKVideo(source, FrameworkData.GLctx);
@@ -77,9 +74,7 @@ function _JS_Video_Create(url) {
         
         videoDecoder.remove();
         videoDecoder.on('start', (res) => {
-            if (isDebug) {
-                console.warn('wxVideoDecoder start:', res);
-            }
+            debugLog('wxVideoDecoder start:', res);
             videoInstance.paused = false;
             videoInstance.stoped = false;
             if (!videoInstance.isReady) {
@@ -93,20 +88,14 @@ function _JS_Video_Create(url) {
             }
         });
         videoDecoder.on('stop', (res) => {
-            if (isDebug) {
-                console.warn('wxVideoDecoder stop:', res);
-            }
+            debugLog('wxVideoDecoder stop:', res);
             videoInstance.stoped = true;
         });
         videoDecoder.on('bufferchange', (res) => {
-            if (isDebug) {
-                console.warn('wxVideoDecoder bufferchange:', res);
-            }
+            debugLog('wxVideoDecoder bufferchange:', res);
         });
         videoDecoder.on('ended', (res) => {
-            if (isDebug) {
-                console.warn('wxVideoDecoder ended:', res);
-            }
+            debugLog('wxVideoDecoder ended:', res);
             if (videoInstance.loop) {
                 videoInstance.seek(0);
             }
@@ -180,9 +169,7 @@ function _JS_Video_Create(url) {
     return videoInstanceIdCounter;
 }
 function _JS_Video_Destroy(video) {
-    if (isDebug) {
-        console.log('_JS_Video_Destroy', video);
-    }
+    debugLog('_JS_Video_Destroy', video);
     videoInstances[video].destroy();
     delete videoInstances[video];
 }
@@ -242,9 +229,7 @@ function _JS_Video_IsSeeking(video) {
     return !!v.seeking;
 }
 function _JS_Video_Pause(video) {
-    if (isDebug) {
-        console.log('_JS_Video_Pause');
-    }
+    debugLog('_JS_Video_Pause');
     const v = videoInstances[video];
     if (v.loopEndPollInterval) {
         clearInterval(v.loopEndPollInterval);
@@ -252,9 +237,7 @@ function _JS_Video_Pause(video) {
     v.pause();
 }
 function _JS_Video_SetLoop(video, loop = false) {
-    if (isDebug) {
-        console.log('_JS_Video_SetLoop', video, loop);
-    }
+    debugLog('_JS_Video_SetLoop', video, loop);
     const v = videoInstances[video];
     if (v.loopEndPollInterval) {
         clearInterval(v.loopEndPollInterval);
@@ -286,9 +269,7 @@ function _JS_Video_SetLoop(video, loop = false) {
     }
 }
 function jsVideoAllAudioTracksAreDisabled(v) {
-    if (isDebug) {
-        console.log('jsVideoAllAudioTracksAreDisabled');
-    }
+    debugLog('jsVideoAllAudioTracksAreDisabled');
     if (!v.enabledTracks) {
         return false;
     }
@@ -300,43 +281,34 @@ function jsVideoAllAudioTracksAreDisabled(v) {
     return true;
 }
 function _JS_Video_Play(video, muted) {
-    if (isDebug) {
-        console.log('_JS_Video_Play', video, muted);
-    }
+    debugLog('_JS_Video_Play', video, muted);
     const v = videoInstances[video];
     v.muted = muted || jsVideoAllAudioTracksAreDisabled(v);
     v.play();
     _JS_Video_SetLoop(video, v.loop);
 }
 function _JS_Video_Seek(video, time) {
-    if (isDebug) {
-        console.log('_JS_Video_Seek', video, time);
-    }
+    debugLog('_JS_Video_Seek', video, time);
     const v = videoInstances[video];
     v.seek(time);
 }
 function _JS_Video_SetEndedHandler(video, ref, onended) {
-    if (isDebug) {
-        console.log('_JS_Video_SetEndedHandler', video, ref, onended);
-    }
+    debugLog('_JS_Video_SetEndedHandler', video, ref, onended);
     const v = videoInstances[video];
     v.onendedCallback = onended;
     v.onendedRef = ref;
 }
 function _JS_Video_SetErrorHandler(video, ref, onerror) {
-    if (isDebug) {
-        console.log('_JS_Video_SetErrorHandler', video, ref, onerror);
-    }
+    debugLog('_JS_Video_SetErrorHandler', video, ref, onerror);
     if (isWebVideo) {
         videoInstances[video].on('error', (errMsg) => {
+            debugLog('video error:', errMsg);
             dynCall_vii(onerror, ref, errMsg);
         });
     }
 }
 function _JS_Video_SetMute(video, muted) {
-    if (isDebug) {
-        console.log('_JS_Video_SetMute', video, muted);
-    }
+    debugLog('_JS_Video_SetMute', video, muted);
     const v = videoInstances[video];
     v.muted = muted || jsVideoAllAudioTracksAreDisabled(v);
 }
@@ -353,9 +325,7 @@ function _JS_Video_SetPlaybackRate(video, rate) {
     
 }
 function _JS_Video_SetReadyHandler(video, ref, onready) {
-    if (isDebug) {
-        console.log('_JS_Video_SetReadyHandler', video, ref, onready);
-    }
+    debugLog('_JS_Video_SetReadyHandler', video, ref, onready);
     const v = videoInstances[video];
     if (isWebVideo) {
         v.on('canplay', () => {
@@ -372,9 +342,7 @@ function _JS_Video_SetReadyHandler(video, ref, onready) {
     }
 }
 function _JS_Video_SetSeekedOnceHandler(video, ref, onseeked) {
-    if (isDebug) {
-        console.log('_JS_Video_SetSeekedOnceHandler', video, ref, onseeked);
-    }
+    debugLog('_JS_Video_SetSeekedOnceHandler', video, ref, onseeked);
     const v = videoInstances[video];
     if (isWebVideo) {
         v.on('seek', () => {
@@ -388,9 +356,7 @@ function _JS_Video_SetSeekedOnceHandler(video, ref, onseeked) {
     }
 }
 function _JS_Video_SetVolume(video, volume) {
-    if (isDebug) {
-        console.log('_JS_Video_SetVolume');
-    }
+    debugLog('_JS_Video_SetVolume');
     videoInstances[video].volume = volume;
 }
 function _JS_Video_Time(video) {
