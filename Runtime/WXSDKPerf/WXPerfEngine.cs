@@ -223,6 +223,24 @@ namespace WXSDKPerf
             m_PerfEngineImplementation.StopRecordManually();
 #endif
 		}
+		/// <summary>
+        /// 禁用函数开销统计黑名单，统计所有函数信息.
+        /// </summary>
+        /// <param name="L">DisableFunctionCostBlackList</param>
+        public static void DisableFunctionCostBlackList()
+        {
+#if UNITY_EDITOR
+            return; 
+#else
+            if (m_PerfEngineImplementation == null)
+            {
+                UnityEngine.Debug.LogError("DisableFunctionCostBlackList: Invalid m_PerfEngineImplementation! ");
+                return;
+            }
+
+            m_PerfEngineImplementation.DisableFunctionCostBlackList();
+#endif
+        }
     }
 }
 #endif
