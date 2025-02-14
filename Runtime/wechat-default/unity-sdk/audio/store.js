@@ -1,3 +1,4 @@
+import { isAndroid } from '../../check-version';
 
 export const WEBAudio = {
     audioInstanceIdCounter: 0,
@@ -19,7 +20,8 @@ export const WEBAudio = {
     bufferSourceNodeLength: 0,
     audioBufferLength: 0,
     isMute: false,
-    FAKEMOD_SAMPLERATE: 44100, 
+    FAKEMOD_SAMPLERATE: 44100,
+    workerShortAudioSupport: isAndroid, 
 };
 
 export const audios = {};

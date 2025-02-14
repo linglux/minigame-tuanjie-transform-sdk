@@ -183,6 +183,7 @@ checkVersion().then((enable) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         GameGlobal.events.on('createWorker', (worker) => {
             // worker created
+            GameGlobal.worker = worker;
         });
     }
 });

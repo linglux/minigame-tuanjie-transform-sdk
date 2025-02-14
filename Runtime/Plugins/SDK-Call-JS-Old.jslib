@@ -366,6 +366,25 @@ mergeInto(LibraryManager.library, {
     WXInnerAudioContextRemoveListener: function (id, key) {
         window.WXWASMSDK.WXInnerAudioContextRemoveListener(_WXPointer_stringify_adaptor(id), _WXPointer_stringify_adaptor(key));
     },
+    WXCreateShortAudioContext: function (src, loop, startTime, autoplay, volume, playbackRate, needDownload) {
+        var returnStr = window.WXWASMSDK.WXCreateShortAudioContext(_WXPointer_stringify_adaptor(src), loop, startTime, autoplay, volume, playbackRate, needDownload);
+        var bufferSize = lengthBytesUTF8(returnStr || '') + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(returnStr, buffer, bufferSize);
+        return buffer;
+    },
+    WXShortAudioContextPlay: function (id) {
+        window.WXWASMSDK.WXShortAudioContextPlay(_WXPointer_stringify_adaptor(id));
+    },
+    WXShortAudioContextStop: function (id) {
+        window.WXWASMSDK.WXShortAudioContextStop(_WXPointer_stringify_adaptor(id));
+    },
+    WXShortAudioContextPause: function (id) {
+        window.WXWASMSDK.WXShortAudioContextPause(_WXPointer_stringify_adaptor(id));
+    },
+    WXShortAudioContextDestroy: function (id) {
+        window.WXWASMSDK.WXShortAudioContextDestroy(_WXPointer_stringify_adaptor(id));
+    },
     WXPreDownloadAudios: function (paths, id) {
         window.WXWASMSDK.WXPreDownloadAudios(_WXPointer_stringify_adaptor(paths), id);
     },

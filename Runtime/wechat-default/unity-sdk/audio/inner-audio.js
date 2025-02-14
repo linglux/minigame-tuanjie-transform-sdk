@@ -161,13 +161,24 @@ function checkHasAudio(id) {
     console.error(INNER_AUDIO_UNDEFINED_MSG, id);
     return false;
 }
+// 消息类型
+const MessageType = {
+    shortAudio: 3, //worker短音频
+};
+const ShortAudioCmdType = {
+    Create: 'create',
+    Play: 'play',
+    Stop: 'stop',
+    Destroy: 'destroy',
+    PreDownload: 'preDownload'
+};
 export default {
-    // 创建audio对象
+    
     WXCreateInnerAudioContext(src, loop, startTime, autoplay, volume, playbackRate, needDownload) {
         const { audio: getAudio, id } = createInnerAudio();
         getAudio.needDownload = needDownload;
         if (src) {
-            // 设置原始src
+            
             funs.setAudioSrc(getAudio, src).catch((e) => {
                 moduleHelper.send('OnAudioCallback', JSON.stringify({
                     callbackId: id,
@@ -364,19 +375,91 @@ export default {
         audios[id][key]();
     },
     WXPreDownloadAudios(paths, id) {
-        funs
-            .downloadAudios(paths)
-            .then(() => {
-            moduleHelper.send('WXPreDownloadAudiosCallback', JSON.stringify({
-                callbackId: id.toString(),
-                errMsg: '0',
-            }));
-        })
-            .catch(() => {
-            moduleHelper.send('WXPreDownloadAudiosCallback', JSON.stringify({
-                callbackId: id.toString(),
-                errMsg: '1',
-            }));
+        if (!WEBAudio.workerShortAudioSupport) {
+            funs
+                .downloadAudios(paths)
+                .then(() => {
+                moduleHelper.send('WXPreDownloadAudiosCallback', JSON.stringify({
+                    callbackId: id.toString(),
+                    errMsg: '0',
+                }));
+            })
+                .catch(() => {
+                moduleHelper.send('WXPreDownloadAudiosCallback', JSON.stringify({
+                    callbackId: id.toString(),
+                    errMsg: '1',
+                }));
+            });
+            return;
+        }
+        GameGlobal.worker.postMessage({
+            type: MessageType.shortAudio,
+            payload: {
+                cmd: ShortAudioCmdType.PreDownload,
+                uid: id,
+                params: {
+                    src: paths
+                },
+            }
+        });
+    },
+    WXCreateShortAudioContext(src, loop, startTime, autoplay, volume, playbackRate, needDownload) {
+        if (!WEBAudio.workerShortAudioSupport) {
+            return this.WXCreateInnerAudioContext(src, loop, startTime, autoplay, volume, playbackRate, needDownload);
+        }
+        const id = new Date().getTime().toString(32) + Math.random().toString(32);
+        GameGlobal.worker.postMessage({
+            type: MessageType.shortAudio,
+            payload: {
+                cmd: ShortAudioCmdType.Create,
+                uid: id,
+                params: {
+                    src,
+                    loop,
+                    startTime,
+                    autoplay,
+                    volume,
+                    playbackRate,
+                    needDownload
+                },
+            }
+        });
+        return id;
+    },
+    WXShortAudioContextPlay(id) {
+        if (!WEBAudio.workerShortAudioSupport) {
+            return this.WXInnerAudioContextPlay(id);
+        }
+        GameGlobal.worker.postMessage({
+            type: MessageType.shortAudio,
+            payload: {
+                cmd: ShortAudioCmdType.Play,
+                uid: id
+            }
+        });
+    },
+    WXShortAudioContextStop(id) {
+        if (!WEBAudio.workerShortAudioSupport) {
+            return this.WXInnerAudioContextStop(id);
+        }
+        GameGlobal.worker.postMessage({
+            type: MessageType.shortAudio,
+            payload: {
+                cmd: ShortAudioCmdType.Stop,
+                uid: id
+            }
+        });
+    },
+    WXShortAudioContextDestroy(id) {
+        if (!WEBAudio.workerShortAudioSupport) {
+            return this.WXInnerAudioContextDestroy(id);
+        }
+        GameGlobal.worker.postMessage({
+            type: MessageType.shortAudio,
+            payload: {
+                cmd: ShortAudioCmdType.Destroy,
+                uid: id
+            }
         });
     },
 };

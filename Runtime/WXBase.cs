@@ -498,6 +498,21 @@ namespace WeChatWASM
         }
 
         /// <summary>
+        /// WXShortAudioContext 实例，在子线程中加载和播放短音频，可通过 WX.CreateShortWorkerAudio 接口获取实例。
+        /// </summary>
+        ///
+        /// <returns></returns><example>
+        // var music = WX.CreateShortWorkerAudio(new InnerAudioContextParam() {
+        //    src = "Assets/Audio/Chill_1.wav",
+        //    needDownload = true //表示等下载完之后再播放，便于后续复用，无延迟
+        // });
+        // </example>
+        public static WXShortAudioContext CreateShortAudioContext(InnerAudioContextParam param = null)
+        {
+            return WXSDKManagerHandler.Instance.CreateShortAudioContext(param);
+        }
+
+        /// <summary>
         /// 音频为网络请求，可能会有延迟，所以可以先调用这个接口预先下载音频缓存到本地，避免延迟
         /// </summary>
         /// <param name="pathList">音频的地址数组,如 { "Assets/Audio/0.wav", "Assets/Audio/1.wav" } </param>

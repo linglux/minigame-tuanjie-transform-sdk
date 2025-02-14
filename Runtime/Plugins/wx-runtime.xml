@@ -10219,6 +10219,26 @@
             </summary>
             <returns>微信启动剧情交互句柄</returns>
         </member>
+        <member name="T:WeChatWASM.WXShortAudioContext">
+            <summary>
+            短音频播放类，相比InnerAudioContext更加轻量, 在子线程操作，只支持基础的播放控制功能
+            </summary>
+        </member>
+        <member name="M:WeChatWASM.WXShortAudioContext.Play">
+            <summary>
+            播放音频
+            </summary>
+        </member>
+        <member name="M:WeChatWASM.WXShortAudioContext.Stop">
+            <summary>
+            停止播放音频
+            </summary>
+        </member>
+        <member name="M:WeChatWASM.WXShortAudioContext.Destroy">
+            <summary>
+            销毁当前实例
+            </summary>
+        </member>
         <member name="M:WeChatWASM.WXTCPSocket.BindWifi(WeChatWASM.TCPSocketBindWifiOption)">
             <summary>
             [TCPSocket.bindWifi(Object options)](https://developers.weixin.qq.com/minigame/dev/api/network/tcp/TCPSocket.bindWifi.html)
