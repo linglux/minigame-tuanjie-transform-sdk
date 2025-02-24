@@ -100,6 +100,22 @@ mergeInto(LibraryManager.library, {
         return window.devicePixelRatio;
     },
 
+    WXSaveErrorData: function(dataPtr, dataSize) {
+        try {
+            const fileName = `${wx.env.USER_DATA_PATH}/utf16_error_${Date.now()}.bin`;
+            const uint8Array = new Uint8Array(HEAPU8.buffer, dataPtr, dataSize);
+            const fs = wx.getFileSystemManager(); 
+            fs.writeFileSync(
+                fileName,
+                uint8Array.buffer,  // 修正变量名dataArray -> uint8Array
+                'binary'
+            );
+            console.error(`Saved invalid UTF-16 data to: ${fileName}`);
+        } catch(e) {
+            console.error('Failed to save error data:', e);
+        }
+    }, 
+
     JSGetConvertPluginVersion: function() {
         var lengthBytes = lengthBytesUTF8(GameGlobal.unityNamespace.convertPluginVersion) + 1;
         var stringOnWasmHeap = _malloc(lengthBytes);
