@@ -48,7 +48,7 @@ namespace WeChatWASM
             PlayerSettings.runInBackground = false;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
 #if UNITY_2022_3_OR_NEWER
-            PlayerSettings.WebGL.template = $"{templateHeader}WXTemplate2022";
+        PlayerSettings.WebGL.template = $"{templateHeader}WXTemplate2022";
 #elif UNITY_2020_1_OR_NEWER
             PlayerSettings.WebGL.template = $"{templateHeader}WXTemplate2020";
 #else
@@ -286,9 +286,9 @@ namespace WeChatWASM
                 // 下方顺序不可变动
                 wxPerfPlugins = new string[]
                 {
-                    $"{jsLibRootDir}WxPerfJsBridge.jslib",
-                    $"{jsLibRootDir}wx_perf_2022.a",
-                    $"{jsLibRootDir}wx_perf_2021.a",
+                     $"{jsLibRootDir}WxPerfJsBridge.jslib",
+                     $"{jsLibRootDir}wx_perf_2022.a",
+                     $"{jsLibRootDir}wx_perf_2021.a",
                 };
             }
 
@@ -569,7 +569,7 @@ namespace WeChatWASM
                 Path.Combine(UnityUtil.GetWxSDKRootPath(), "Runtime", "wechat-default"),
                 Path.Combine(Application.dataPath, "WX-WASM-SDK-V2", "Editor", "template"),
                 new string[] { @"\.(js|ts|json)$" }
-            );
+                );
             if (res.Length != 0)
             {
                 Debug.LogError("系统发现自定义构建模板中存在以下文件对应的基础模板已被更新，为确保游戏导出正常工作请自行解决可能存在的冲突：");
@@ -642,9 +642,9 @@ namespace WeChatWASM
             var dotnetJs = File.ReadAllText(dotnetJsPath, Encoding.UTF8);
             // todo: handle dotnet js
             foreach (var rule in ReplaceRules.DoenetRules(new string[] { frameworkDir,
-                         Path.GetFileName(GetWeixinMiniGameFilePath("jsModuleRuntime")[0]),
-                         Path.GetFileName(GetWeixinMiniGameFilePath("jsModuleNative")[0]),
-                     }))
+                Path.GetFileName(GetWeixinMiniGameFilePath("jsModuleRuntime")[0]),
+                Path.GetFileName(GetWeixinMiniGameFilePath("jsModuleNative")[0]),
+            }))
             {
                 if (ShowMatchFailedWarning(dotnetJs, rule.old, "dotnet") == false)
                 {
@@ -693,7 +693,7 @@ namespace WeChatWASM
             }
             EditorUtility.ClearProgressBar();
             string[] prefixs =
-            {
+             {
                 "_JS_Video_",
                 //"jsVideo",
                 "_JS_Sound_",
@@ -878,11 +878,11 @@ namespace WeChatWASM
 #if UNITY_6000_0_OR_NEWER
             // 从小游戏转换工具里无法直接开启wasm2023特性 会导致转出的webgl异常，所以强制关闭
            	PlayerSettings.WebGL.wasm2023 = false;
-#endif
+#endif   
 
 #if UNITY_2021_2_OR_NEWER
 #if UNITY_2022_1_OR_NEWER
-            // 默认更改为OptimizeSize，减少代码包体积
+                // 默认更改为OptimizeSize，减少代码包体积
             PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, config.CompileOptions.Il2CppOptimizeSize ? Il2CppCodeGeneration.OptimizeSize : Il2CppCodeGeneration.OptimizeSpeed);
 #else
             EditorUserBuildSettings.il2CppCodeGeneration = config.CompileOptions.Il2CppOptimizeSize ? Il2CppCodeGeneration.OptimizeSize : Il2CppCodeGeneration.OptimizeSpeed;
