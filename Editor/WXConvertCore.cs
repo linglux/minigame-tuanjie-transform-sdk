@@ -11,6 +11,7 @@ using LitJson;
 using UnityEditor.Build;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using static WeChatWASM.LifeCycleEvent;
 
 namespace WeChatWASM
@@ -809,7 +810,7 @@ namespace WeChatWASM
             if (WXExtEnvDef.GETDEF("UNITY_2021_2_OR_NEWER"))
             {
                 PlayerSettings.WebGL.emscriptenArgs += " -s EXPORTED_FUNCTIONS=_sbrk,_emscripten_stack_get_base,_emscripten_stack_get_end";
-#if UNITY_2021_2_5
+#if UNITY_2021_2_5 || UNITY_6000_0_OR_NEWER
                 PlayerSettings.WebGL.emscriptenArgs += ",_main";
 #endif
                 PlayerSettings.WebGL.emscriptenArgs += " -s ERROR_ON_UNDEFINED_SYMBOLS=0";
@@ -875,8 +876,11 @@ namespace WeChatWASM
             }
 
 #if UNITY_6000_0_OR_NEWER
-            // 从小游戏转换工具里无法直接开启wasm2023特性 会导致转出的webgl异常，所以强制关闭
-           	PlayerSettings.WebGL.wasm2023 = false;
+            if (config.CompileOptions.enableWasm2023) {
+                PlayerSettings.WebGL.wasm2023 = true;
+            } else {
+                PlayerSettings.WebGL.wasm2023 = false;
+            }
 #endif   
 
 #if UNITY_2021_2_OR_NEWER
@@ -996,8 +1000,61 @@ namespace WeChatWASM
             return boot["resources"][key].Keys.Select(file => Path.Combine(config.ProjectConf.DST, webglDir, "Code", "wwwroot", "_framework", file)).ToArray();
         }
 
+        [DllImport("newstatehooker.dll", EntryPoint = "add_lua_newstate_hook")]
+        private static extern int add_lua_newstate_hook_win(string filename);
+
+        [DllImport("newstatehooker", EntryPoint = "add_lua_newstate_hook")]
+        private static extern int add_lua_newstate_hook_osx(string filename);
+
+        private static int add_lua_newstate_hook(string filename)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return add_lua_newstate_hook_win(filename);
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return add_lua_newstate_hook_osx(filename);
+            }
+
+            throw new System.NotSupportedException($"add_lua_newstate_hook not supported on: {RuntimeInformation.OSDescription}");
+        }
+
+        private static void MaybeInstallLuaNewStateHook()
+        {
+            // 当前版本仅支持 win & mac, 不满足时直接跳过.
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Debug.LogWarning($"MaybeInstallLuaNewStateHook:: Cannot install lua runtime on {RuntimeInformation.OSDescription}");
+                return;
+            }
+
+            // 没有开启 perf tools, 不引入 newstate hook.
+            if (!config.CompileOptions.enablePerfAnalysis)
+            {
+                return;
+            }
+
+            string codePath = GetWebGLCodePath();
+            try
+            {
+                var ret = add_lua_newstate_hook(codePath);
+                if (ret != 0)
+                {
+                    Debug.LogWarning($"cannot add lua new state hook: {ret}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"cannot add lua new state hook: {e}");
+            }
+        }
+
         private static void finishExport()
         {
+            MaybeInstallLuaNewStateHook();
+
             int code = GenerateBinFile();
             if (code == 0)
             {
@@ -1748,15 +1805,23 @@ namespace WeChatWASM
             // 添加player-connection-ip信息
             try
             {
-                var host = Dns.GetHostEntry("");
-                foreach (var ip in host.AddressList)
-                {
-                    if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                    {
-                        sb.Append($"player-connection-ip={ip.ToString()}");
-                        break;
-                    }
-                }
+                var ips = Dns.GetHostEntry("").AddressList
+                    .Where(ip => ip.AddressFamily == AddressFamily.InterNetwork)
+                    .Select(ip => ip.ToString())
+                    .ToList();
+
+                // 优先选择局域网IP（192.168.x.x, 10.x.x.x, 172.16.x.x）
+                var localNetworkIps = ips.Where(ip =>
+                    ip.StartsWith("192.168.") ||
+                    ip.StartsWith("10.") ||
+                    (ip.StartsWith("172.") && int.Parse(ip.Split('.')[1]) >= 16 && int.Parse(ip.Split('.')[1]) <= 31))
+                    .ToList();
+
+                // 如果有局域网IP则使用，否则使用其他IP，最后回退到127.0.0.1
+                var selectedIp = localNetworkIps.Any() ? localNetworkIps.First() :
+                               ips.Any() ? ips.First() : "127.0.0.1";
+
+                sb.Append($"player-connection-ip={selectedIp}");
             }
             catch (Exception e)
             {
