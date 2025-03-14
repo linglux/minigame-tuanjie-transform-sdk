@@ -11,9 +11,9 @@ using LitJson;
 using UnityEditor.Build;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using static WeChatWASM.LifeCycleEvent;
-
 namespace WeChatWASM
 {
     public class WXConvertCore
