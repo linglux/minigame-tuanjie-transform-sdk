@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-for-of */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { isH5Renderer, isSupportVideoPlayer, isPc, isDevtools } from '../../check-version';
-import { debugLog } from '../utils';
+import { isH5Renderer, isSupportVideoPlayer, isDebug, isPc, isDevtools } from '../../check-version';
 let FrameworkData = null;
 
 const isWebVideo = (isH5Renderer && !GameGlobal.isIOSHighPerformanceModePlus) || isPc || isDevtools;
@@ -27,7 +26,9 @@ function dynCall_vii(...args) {
     }
 }
 function jsVideoEnded() {
-    debugLog('jsVideoEnded');
+    if (isDebug) {
+        console.log('jsVideoEnded');
+    }
     // @ts-ignore
     if (this.onendedCallback) {
         // @ts-ignore
@@ -39,7 +40,9 @@ function _JS_Video_Create(url) {
     if (FrameworkData) {
         source = FrameworkData.UTF8ToString(url);
     }
-    debugLog('_JS_Video_Create', source);
+    if (isDebug) {
+        console.log('_JS_Video_Create', source);
+    }
     if (isWebVideo) {
         // @ts-ignore
         const video = GameGlobal.manager.createWKVideo(source, FrameworkData.GLctx);
@@ -63,7 +66,7 @@ function _JS_Video_Create(url) {
             videoWidth: 0,
             videoHeight: 0,
             isReady: false,
-            stoped: true,
+            stoped: false,
             paused: false,
             ended: false,
             seeking: false,
@@ -74,8 +77,11 @@ function _JS_Video_Create(url) {
         
         videoDecoder.remove();
         videoDecoder.on('start', (res) => {
-            debugLog('wxVideoDecoder start:', res);
-            
+            if (isDebug) {
+                console.warn('wxVideoDecoder start:', res);
+            }
+            videoInstance.paused = false;
+            videoInstance.stoped = false;
             if (!videoInstance.isReady) {
                 if (res.video && res.video.duration) {
                     videoInstance.duration = res.video.duration / 1000;
@@ -85,20 +91,22 @@ function _JS_Video_Create(url) {
                 videoInstance.isReady = true;
                 videoDecoder.stop();
             }
-            else {
-                videoInstance.paused = false;
-                videoInstance.stoped = false;
-            }
         });
         videoDecoder.on('stop', (res) => {
-            debugLog('wxVideoDecoder stop:', res);
+            if (isDebug) {
+                console.warn('wxVideoDecoder stop:', res);
+            }
             videoInstance.stoped = true;
         });
         videoDecoder.on('bufferchange', (res) => {
-            debugLog('wxVideoDecoder bufferchange:', res);
+            if (isDebug) {
+                console.warn('wxVideoDecoder bufferchange:', res);
+            }
         });
         videoDecoder.on('ended', (res) => {
-            debugLog('wxVideoDecoder ended:', res);
+            if (isDebug) {
+                console.warn('wxVideoDecoder ended:', res);
+            }
             if (videoInstance.loop) {
                 videoInstance.seek(0);
             }
@@ -146,6 +154,7 @@ function _JS_Video_Create(url) {
             videoInstance.seeking = true;
             videoDecoder.emitter.emit('seek', {});
         };
+        videoInstance.play();
         videoInstance.destroy = () => {
             if (needCache) {
                 videoDecoder.stop();
@@ -160,19 +169,20 @@ function _JS_Video_Create(url) {
             delete videoInstance.videoDecoder;
             delete videoInstance.onendedCallback;
             delete videoInstance.frameData;
-            videoInstance.stoped = true;
+            videoInstance.stoped = false;
             videoInstance.paused = false;
             videoInstance.ended = false;
             videoInstance.seeking = false;
             videoInstance.currentTime = 0;
             videoInstance.onended = null;
         };
-        videoInstance.play();
     }
     return videoInstanceIdCounter;
 }
 function _JS_Video_Destroy(video) {
-    debugLog('_JS_Video_Destroy', video);
+    if (isDebug) {
+        console.log('_JS_Video_Destroy', video);
+    }
     videoInstances[video].destroy();
     delete videoInstances[video];
 }
@@ -232,7 +242,9 @@ function _JS_Video_IsSeeking(video) {
     return !!v.seeking;
 }
 function _JS_Video_Pause(video) {
-    debugLog('_JS_Video_Pause');
+    if (isDebug) {
+        console.log('_JS_Video_Pause');
+    }
     const v = videoInstances[video];
     if (v.loopEndPollInterval) {
         clearInterval(v.loopEndPollInterval);
@@ -240,7 +252,9 @@ function _JS_Video_Pause(video) {
     v.pause();
 }
 function _JS_Video_SetLoop(video, loop = false) {
-    debugLog('_JS_Video_SetLoop', video, loop);
+    if (isDebug) {
+        console.log('_JS_Video_SetLoop', video, loop);
+    }
     const v = videoInstances[video];
     if (v.loopEndPollInterval) {
         clearInterval(v.loopEndPollInterval);
@@ -272,7 +286,9 @@ function _JS_Video_SetLoop(video, loop = false) {
     }
 }
 function jsVideoAllAudioTracksAreDisabled(v) {
-    debugLog('jsVideoAllAudioTracksAreDisabled');
+    if (isDebug) {
+        console.log('jsVideoAllAudioTracksAreDisabled');
+    }
     if (!v.enabledTracks) {
         return false;
     }
@@ -284,34 +300,43 @@ function jsVideoAllAudioTracksAreDisabled(v) {
     return true;
 }
 function _JS_Video_Play(video, muted) {
-    debugLog('_JS_Video_Play', video, muted);
+    if (isDebug) {
+        console.log('_JS_Video_Play', video, muted);
+    }
     const v = videoInstances[video];
     v.muted = muted || jsVideoAllAudioTracksAreDisabled(v);
     v.play();
     _JS_Video_SetLoop(video, v.loop);
 }
 function _JS_Video_Seek(video, time) {
-    debugLog('_JS_Video_Seek', video, time);
+    if (isDebug) {
+        console.log('_JS_Video_Seek', video, time);
+    }
     const v = videoInstances[video];
     v.seek(time);
 }
 function _JS_Video_SetEndedHandler(video, ref, onended) {
-    debugLog('_JS_Video_SetEndedHandler', video, ref, onended);
+    if (isDebug) {
+        console.log('_JS_Video_SetEndedHandler', video, ref, onended);
+    }
     const v = videoInstances[video];
     v.onendedCallback = onended;
     v.onendedRef = ref;
 }
 function _JS_Video_SetErrorHandler(video, ref, onerror) {
-    debugLog('_JS_Video_SetErrorHandler', video, ref, onerror);
+    if (isDebug) {
+        console.log('_JS_Video_SetErrorHandler', video, ref, onerror);
+    }
     if (isWebVideo) {
         videoInstances[video].on('error', (errMsg) => {
-            debugLog('video error:', errMsg);
             dynCall_vii(onerror, ref, errMsg);
         });
     }
 }
 function _JS_Video_SetMute(video, muted) {
-    debugLog('_JS_Video_SetMute', video, muted);
+    if (isDebug) {
+        console.log('_JS_Video_SetMute', video, muted);
+    }
     const v = videoInstances[video];
     v.muted = muted || jsVideoAllAudioTracksAreDisabled(v);
 }
@@ -328,7 +353,9 @@ function _JS_Video_SetPlaybackRate(video, rate) {
     
 }
 function _JS_Video_SetReadyHandler(video, ref, onready) {
-    debugLog('_JS_Video_SetReadyHandler', video, ref, onready);
+    if (isDebug) {
+        console.log('_JS_Video_SetReadyHandler', video, ref, onready);
+    }
     const v = videoInstances[video];
     if (isWebVideo) {
         v.on('canplay', () => {
@@ -345,7 +372,9 @@ function _JS_Video_SetReadyHandler(video, ref, onready) {
     }
 }
 function _JS_Video_SetSeekedOnceHandler(video, ref, onseeked) {
-    debugLog('_JS_Video_SetSeekedOnceHandler', video, ref, onseeked);
+    if (isDebug) {
+        console.log('_JS_Video_SetSeekedOnceHandler', video, ref, onseeked);
+    }
     const v = videoInstances[video];
     if (isWebVideo) {
         v.on('seek', () => {
@@ -359,7 +388,9 @@ function _JS_Video_SetSeekedOnceHandler(video, ref, onseeked) {
     }
 }
 function _JS_Video_SetVolume(video, volume) {
-    debugLog('_JS_Video_SetVolume');
+    if (isDebug) {
+        console.log('_JS_Video_SetVolume');
+    }
     videoInstances[video].volume = volume;
 }
 function _JS_Video_Time(video) {

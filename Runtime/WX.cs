@@ -82,8 +82,8 @@ namespace WeChatWASM
         /// wx.authorize({
         /// scope: 'scope.writePhotosAlbum',
         /// success () {
-        /// // 用户已经同意保存到相册功能，后续调用 wx.saveImageToPhotosAlbum 接口不会弹窗询问
-        /// wx.saveImageToPhotosAlbum()
+        ///   // 用户已经同意保存到相册功能，后续调用 wx.saveImageToPhotosAlbum 接口不会弹窗询问
+        ///   wx.saveImageToPhotosAlbum()
         /// }
         /// })
         /// }
@@ -958,7 +958,7 @@ namespace WeChatWASM
         /// // 已经授权，可以直接调用 getUserInfo 获取头像昵称
         /// wx.getUserInfo({
         /// success: function(res) {
-        /// console.log(res.userInfo)
+        ///   console.log(res.userInfo)
         /// }
         /// })
         /// } else {
@@ -967,16 +967,16 @@ namespace WeChatWASM
         /// type: 'text',
         /// text: '获取用户信息',
         /// style: {
-        /// left: 10,
-        /// top: 76,
-        /// width: 200,
-        /// height: 40,
-        /// lineHeight: 40,
-        /// backgroundColor: '#ff0000',
-        /// color: '#ffffff',
-        /// textAlign: 'center',
-        /// fontSize: 16,
-        /// borderRadius: 4
+        ///   left: 10,
+        ///   top: 76,
+        ///   width: 200,
+        ///   height: 40,
+        ///   lineHeight: 40,
+        ///   backgroundColor: '#ff0000',
+        ///   color: '#ffffff',
+        ///   textAlign: 'center',
+        ///   fontSize: 16,
+        ///   borderRadius: 4
         /// }
         /// })
         /// button.onTap((res) => {
@@ -1135,7 +1135,7 @@ namespace WeChatWASM
         /// wx.request({
         /// url: 'https://example.com/onLogin',
         /// data: {
-        /// code: res.code
+        ///   code: res.code
         /// }
         /// })
         /// } else {
@@ -1682,7 +1682,7 @@ namespace WeChatWASM
         /// need_encode_body = method + '&' + sign_data
         /// print(need_encode_body)
         /// return hmac.new(key=appkey.encode('utf-8'), msg=need_encode_body.encode('utf-8'),
-        ///     digestmod=hashlib.sha256).hexdigest()
+        ///         digestmod=hashlib.sha256).hexdigest()
         /// ```
         /// </summary>
         public static void RequestMidasPaymentGameItem(RequestMidasPaymentGameItemOption callback)
@@ -3318,14 +3318,14 @@ namespace WeChatWASM
         /// wx.onUserCaptureScreen(function (res) {
         /// console.log('用户截屏了')
         /// return {
-        /// query: "parameter=test", // 通过截屏图片打开小程序的query参数
-        /// promise: new Promise((resolve) => { // 通过promise延时传递小程序的query参数
-        ///         setTimeout(() => {
-        ///             resolve({
-        ///                 query: "parameter=test2",
-        ///             })
-        ///         }, 1000) // 在1秒内对query进行解析
-        ///     })
+        ///     query: "parameter=test", // 通过截屏图片打开小程序的query参数
+        ///     promise: new Promise((resolve) => { // 通过promise延时传递小程序的query参数
+        ///             setTimeout(() => {
+        ///                 resolve({
+        ///                     query: "parameter=test2",
+        ///                 })
+        ///             }, 1000) // 在1秒内对query进行解析
+        ///         })
         /// }
         /// }
         /// )
@@ -3514,7 +3514,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static bool SetHandoffQuery(string query)
         {
-            return WXSDKManagerHandler.SetHandoffQuery(query);
+            return WXSDKManagerHandler.Instance.SetHandoffQuery(query);
         }
 
         /// <summary>
@@ -3532,7 +3532,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static AccountInfo GetAccountInfoSync()
         {
-            return WXSDKManagerHandler.GetAccountInfoSync();
+            return WXSDKManagerHandler.Instance.GetAccountInfoSync();
         }
 
         /// <summary>
@@ -3562,7 +3562,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static AppAuthorizeSetting GetAppAuthorizeSetting()
         {
-            return WXSDKManagerHandler.GetAppAuthorizeSetting();
+            return WXSDKManagerHandler.Instance.GetAppAuthorizeSetting();
         }
 
         /// <summary>
@@ -3583,7 +3583,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static AppBaseInfo GetAppBaseInfo()
         {
-            return WXSDKManagerHandler.GetAppBaseInfo();
+            return WXSDKManagerHandler.Instance.GetAppBaseInfo();
         }
 
         /// <summary>
@@ -3593,7 +3593,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static GetBatteryInfoSyncResult GetBatteryInfoSync()
         {
-            return WXSDKManagerHandler.GetBatteryInfoSync();
+            return WXSDKManagerHandler.Instance.GetBatteryInfoSync();
         }
 
         /// <summary>
@@ -3614,7 +3614,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static DeviceInfo GetDeviceInfo()
         {
-            return WXSDKManagerHandler.GetDeviceInfo();
+            return WXSDKManagerHandler.Instance.GetDeviceInfo();
         }
 
         /// <summary>
@@ -3646,7 +3646,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static EnterOptionsGame GetEnterOptionsSync()
         {
-            return WXSDKManagerHandler.GetEnterOptionsSync();
+            return WXSDKManagerHandler.Instance.GetEnterOptionsSync();
         }
 
         /// <summary>
@@ -3661,7 +3661,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static T GetExptInfoSync<T>(string[] keys)
         {
-            return WXSDKManagerHandler.GetExptInfoSync<T>(keys);
+            return WXSDKManagerHandler.Instance.GetExptInfoSync<T>(keys);
         }
 
         /// <summary>
@@ -3679,7 +3679,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static T GetExtConfigSync<T>()
         {
-            return WXSDKManagerHandler.GetExtConfigSync<T>();
+            return WXSDKManagerHandler.Instance.GetExtConfigSync<T>();
         }
 
         /// <summary>
@@ -3701,7 +3701,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static LaunchOptionsGame GetLaunchOptionsSync()
         {
-            return WXSDKManagerHandler.GetLaunchOptionsSync();
+            return WXSDKManagerHandler.Instance.GetLaunchOptionsSync();
         }
 
         /// <summary>
@@ -3722,7 +3722,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static ClientRect GetMenuButtonBoundingClientRect()
         {
-            return WXSDKManagerHandler.GetMenuButtonBoundingClientRect();
+            return WXSDKManagerHandler.Instance.GetMenuButtonBoundingClientRect();
         }
 
         /// <summary>
@@ -3752,7 +3752,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static GetStorageInfoSyncOption GetStorageInfoSync()
         {
-            return WXSDKManagerHandler.GetStorageInfoSync();
+            return WXSDKManagerHandler.Instance.GetStorageInfoSync();
         }
 
         /// <summary>
@@ -3761,7 +3761,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static SystemInfo GetSystemInfoSync()
         {
-            return WXSDKManagerHandler.GetSystemInfoSync();
+            return WXSDKManagerHandler.Instance.GetSystemInfoSync();
         }
 
         /// <summary>
@@ -3780,7 +3780,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static SystemSetting GetSystemSetting()
         {
-            return WXSDKManagerHandler.GetSystemSetting();
+            return WXSDKManagerHandler.Instance.GetSystemSetting();
         }
 
         /// <summary>
@@ -3803,7 +3803,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static WindowInfo GetWindowInfo()
         {
-            return WXSDKManagerHandler.GetWindowInfo();
+            return WXSDKManagerHandler.Instance.GetWindowInfo();
         }
 
         /// <summary>
@@ -3819,7 +3819,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static ImageData CreateImageData(double width, double height)
         {
-            return WXSDKManagerHandler.CreateImageData(width, height);
+            return WXSDKManagerHandler.Instance.CreateImageData(width, height);
         }
 
         /// <summary>
@@ -3830,7 +3830,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static Path2D CreatePath2D()
         {
-            return WXSDKManagerHandler.CreatePath2D();
+            return WXSDKManagerHandler.Instance.CreatePath2D();
         }
 
         /// <summary>
@@ -3841,7 +3841,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static bool IsPointerLocked()
         {
-            return WXSDKManagerHandler.IsPointerLocked();
+            return WXSDKManagerHandler.Instance.IsPointerLocked();
         }
 
         /// <summary>
@@ -3856,7 +3856,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static bool IsVKSupport(string version)
         {
-            return WXSDKManagerHandler.IsVKSupport(version);
+            return WXSDKManagerHandler.Instance.IsVKSupport(version);
         }
 
         /// <summary>
@@ -3870,7 +3870,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static bool SetCursor(string path, double x, double y)
         {
-            return WXSDKManagerHandler.SetCursor(path, x, y);
+            return WXSDKManagerHandler.Instance.SetCursor(path, x, y);
         }
 
         /// <summary>
@@ -3904,7 +3904,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static bool SetMessageToFriendQuery(SetMessageToFriendQueryOption option)
         {
-            return WXSDKManagerHandler.SetMessageToFriendQuery(option);
+            return WXSDKManagerHandler.Instance.SetMessageToFriendQuery(option);
         }
 
         /// <summary>
@@ -3914,7 +3914,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static double GetTextLineHeight(GetTextLineHeightOption option)
         {
-            return WXSDKManagerHandler.GetTextLineHeight(option);
+            return WXSDKManagerHandler.Instance.GetTextLineHeight(option);
         }
 
         /// <summary>
@@ -3924,7 +3924,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static string LoadFont(string path)
         {
-            return WXSDKManagerHandler.LoadFont(path);
+            return WXSDKManagerHandler.Instance.LoadFont(path);
         }
 
         /// <summary>
@@ -3933,7 +3933,7 @@ namespace WeChatWASM
         /// <returns></returns>
         public static GameLiveState GetGameLiveState()
         {
-            return WXSDKManagerHandler.GetGameLiveState();
+            return WXSDKManagerHandler.Instance.GetGameLiveState();
         }
 
         /// <summary>
