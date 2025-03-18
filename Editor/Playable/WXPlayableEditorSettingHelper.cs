@@ -71,7 +71,7 @@ namespace WeChatWASM
         EditorGUILayout.BeginVertical("frameBox", GUILayout.ExpandWidth(true));
         this.formInput("appid", "小游戏试玩AppID");
         this.formInput("projectName", "小游戏试玩项目名");
-        this.formIntPopup("orientation", "游戏方向", new[] { "Portrait", "Landscape", "LandscapeLeft", "LandscapeRight" }, new[] { 0, 1, 2, 3 });
+        this.formIntPopup("orientation", "游戏方向", new[] { "Portrait", "Landscape" }, new[] { 0, 1, 2, 3 });
         this.formInput("memorySize", "UnityHeap预留内存(?)", "单位MB，预分配内存值，超休闲游戏256/中轻度496/重度游戏768，需预估游戏最大UnityHeap值以防止内存自动扩容带来的峰值尖刺。预估方法请查看GIT文档《优化Unity WebGL的内存》");
 
         GUILayout.BeginHorizontal();

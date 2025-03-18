@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-plusplus */
-import { isAndroid, isPc, webAudioNeedResume, isSupportBufferURL, isSupportPlayBackRate, isSupportInnerAudio, isIOS175, } from '../../check-version';
+import { isAndroid, webAudioNeedResume, isSupportBufferURL, isSupportPlayBackRate, isIOS175, } from '../../check-version';
 import { WEBAudio, unityAudioVolume } from './store';
 import { TEMP_DIR_PATH } from './const';
 import { createInnerAudio, destroyInnerAudio, printErrMsg, resumeWebAudio } from './utils';
@@ -943,20 +943,21 @@ export default {
         }
         const audioData = GameGlobal.unityNamespace.Module.HEAPU8.buffer.slice(ptr, ptr + length);
         
-        if (length > 131072) {
-            decompress = 0;
-        }
-        else {
-            decompress = 1;
-        }
         
-        if (isPc) {
-            decompress = 1;
-        }
         
-        if (isAndroid && !isSupportInnerAudio) {
-            decompress = 1;
-        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        decompress = 1;
         let soundClip;
         if (decompress && WEBAudio.audioWebSupport) {
             soundClip = jsAudioCreateUncompressedSoundClipFromCompressedAudio(audioData, ptr, length);
