@@ -293,6 +293,17 @@ public class WXProfileStatsScript : MonoBehaviour, WeChatWASM.WXSDKManagerHandle
             {
                 WeChatWASM.WXSDKManagerHandler.Instance.ProfilingMemoryDump();
             }
+            
+            if (GUILayout.Button("Disable All Particles", GUILayout.ExpandWidth(false)))
+            {
+                // 停止所有粒子系统
+                ParticleSystem[] particleSystems = FindObjectsOfType<ParticleSystem>();
+                foreach (ParticleSystem particleSystem in particleSystems)
+                {
+                    particleSystem.Stop();
+                    particleSystem.GetComponent<ParticleSystemRenderer>().enabled = false;
+                }
+            }
 
             GUILayout.BeginVertical(m_bgStyle);
             if (m_isShow)
