@@ -305,6 +305,16 @@ public class WXProfileStatsScript : MonoBehaviour, WeChatWASM.WXSDKManagerHandle
                 }
             }
 
+            if (GUILayout.Button("Disable All Animators", GUILayout.ExpandWidth(false)))
+            {
+                // 停止所有动画
+                Animator[] animators = FindObjectsOfType<Animator>();
+                foreach (Animator animator in animators)
+                {
+                    animator.enabled = false;
+                }
+            }
+
             GUILayout.BeginVertical(m_bgStyle);
             if (m_isShow)
             {
