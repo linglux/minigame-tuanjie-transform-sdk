@@ -34,10 +34,10 @@ const systemVersionArr = system ? system.split(' ') : [];
 const systemVersion = systemVersionArr.length ? systemVersionArr[systemVersionArr.length - 1] : '';
 // pc微信版本号不一致，需要>=3.3
 const isPcWeChatVersionValid = compareVersion(version, '3.3');
-// 支持unity小游戏，需要试玩基础库>=2.0.9
-const isLibVersionValid = compareVersion(SDKVersion, '2.0.9');
-// 如果是iOS高性能模式，基础库需要>=2.0.9
-const isH5LibVersionValid = compareVersion(SDKVersion, '2.0.9');
+// 支持unity小游戏，需要试玩基础库>=2.0.10
+const isLibVersionValid = compareVersion(SDKVersion, '2.0.10');
+// 如果是iOS高性能模式，基础库需要>=2.0.10
+const isH5LibVersionValid = compareVersion(SDKVersion, '2.0.10');
 // 压缩纹理需要iOS系统版本>=14.0，检测到不支持压缩纹理时会提示升级系统
 const isIOSH5SystemVersionValid = compareVersion(systemVersion, '14.0');
 // iOS系统版本>=15支持webgl2，高性能模式+无此系统要求
@@ -49,7 +49,7 @@ const isWebgl2 = () => GameGlobal.managerConfig.contextConfig.contextType === 2;
 // 是否支持BufferURL
 export const isSupportBufferURL = !isPc
     && (isH5Renderer
-        ? compareVersion(SDKVersion, '2.0.9') && compareVersion(version, '8.0.30')
+        ? compareVersion(SDKVersion, '2.0.10') && compareVersion(version, '8.0.30')
         : typeof wx.createBufferURL === 'function');
 // 安卓innerAudio支持playbackRate
 export const isSupportPlayBackRate = !isAndroid || compareVersion(version, '8.0.23');
@@ -60,7 +60,7 @@ export const isSupportInnerAudio = compareVersion(version, '8.0.38');
 // 检查是否支持brotli压缩，pc基础库>=2.29.2，真机基础库>=2.21.1
 // @ts-ignore
 const isPcBrotliInvalid = isPc && !compareVersion(SDKVersion, $LOAD_DATA_FROM_SUBPACKAGE ? '2.29.2' : '2.32.3');
-const isMobileBrotliInvalid = isMobile && !compareVersion(SDKVersion, '2.0.9');
+const isMobileBrotliInvalid = isMobile && !compareVersion(SDKVersion, '2.0.10');
 // @ts-ignore
 const isBrotliInvalid = $COMPRESS_DATA_PACKAGE && (isPcBrotliInvalid || isMobileBrotliInvalid);
 // iOS系统版本>=17.5时，小游戏退后台会导致异常
@@ -137,6 +137,7 @@ export default () => new Promise((resolve) => {
                     updateWechat = false;
                 }
             }
+            console.error('提示: ', content);
             wx.showModal({
                 title: '提示',
                 content,
