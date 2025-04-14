@@ -106,5 +106,12 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(GameGlobal.unityNamespace.convertPluginVersion, stringOnWasmHeap, lengthBytes);
         
         return stringOnWasmHeap;
+    },
+    
+    JSProfilerCanvasToFilepathSync: function(savePath) {
+        if (GameGlobal && GameGlobal.unityNamespace && GameGlobal.unityNamespace.ProfileWebgl && GameGlobal.unityNamespace.ProfileWebgl.stopRecord) {
+            const savePathJSStr = UTF8ToString(savePath);
+            GameGlobal.manager.profiler.canvasToFilepathSync(savePathJSStr);
+        }
     }
 });
