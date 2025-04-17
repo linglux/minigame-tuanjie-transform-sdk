@@ -32,7 +32,7 @@ mergeInto(LibraryManager.library, {
         //if (GameGlobal && GameGlobal.manager && GameGlobal.manager.profiler) {
             const name = UTF8ToString(namePtr);
             const dir = UTF8ToString(dirPtr);
-            const content = new Uint8Array(dataPtr, bufSize);
+            const content = new Uint8Array(HEAPU8, dataPtr, bufSize);
             GameGlobal.manager.profiler.uploadBinary({
                 'data': content,
                 'len': bufSize,
